@@ -143,7 +143,8 @@ def remove_account(adminuser, adminpass, user, session):
         sys.exit(-1)
 
     # Force-remove /home/user
-    shutil.rmtree("/home/%s" % user)
+    if user not None and user != "":
+        shutil.rmtree("/home/%s" % user)
 
     return True
 

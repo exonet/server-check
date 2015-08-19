@@ -43,7 +43,7 @@ class TestDirectAdmin(unittest.TestCase):
         from server_check import directadmin
 
         with Betamax(self.session).use_cassette('create_random_domain'):
-            self.domain, self.user, self.password = directadmin.create_random_domain('admin', 'W8xXbar8!', self.session)
+            self.domain, self.user, self.password = directadmin.create_random_domain('', '', self.session)
             self.assertIn(self.user, self.domain)  # 6-char username should be in domain.nl
 
     def test_02_validPassword(self):
@@ -60,4 +60,4 @@ class TestDirectAdmin(unittest.TestCase):
     def test_04_remove_account(self):
         from server_check import directadmin
         with Betamax(self.session).use_cassette('create_random_domain'):
-            self.assertTrue(directadmin.remove_account('admin', 'W8xXbar8!', self.user, self.session))
+            self.assertTrue(directadmin.remove_account('', '', self.user, self.session))
