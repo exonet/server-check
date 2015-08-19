@@ -34,12 +34,13 @@ class TestDirectAdmin:
         self.session = Session()
 
     def test_00_mysql_connection(self):
+        self.setUp()
         from server_check import directadmin
         assert 'OK' in directadmin.test_mysql_connection()
 
     def test_01_create_random_domain(self):
-        from server_check import directadmin
         self.setUp()
+        from server_check import directadmin
 
         with Betamax(self.session).use_cassette('create_random_domain'):
             self.domain, self.user, self.password = directadmin.create_random_domain('admin', 'Ohrah6Ni!', self.session)
