@@ -6,8 +6,8 @@ python:
 sudo: required
 
 install:
-  - pip install -r requirements-testing.txt
-  - pip install -e .
+  - sudo pip install -r requirements-testing.txt
+  - sudo pip install -e .
 
 script:
   - sudo py.test
