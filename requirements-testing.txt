@@ -1,0 +1,5 @@
+coveralls
+betamax
+pytest
+requests
+MySQL-python

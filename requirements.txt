@@ -1,3 +1,2 @@
-betamax
 requests
 MySQL-python

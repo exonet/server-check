@@ -142,10 +142,6 @@ def remove_account(adminuser, adminpass, user, session):
         print error("Unable to delete DirectAdmin user %s: %s" % (user, r.text))
         sys.exit(-1)
 
-    # Force-remove /home/user
-    if user not None and user != "":
-        shutil.rmtree("/home/%s" % user)
-
     return True
 
 

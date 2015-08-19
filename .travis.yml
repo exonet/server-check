@@ -6,13 +6,10 @@ python:
 sudo: required
 
 install:
-  - pip install coveralls 
-  - pip install betamax
-  - pip install -r requirements.txt
-  #- python setup.py install
+  - pip install -r requirements-testing.txt
 
 script:
-  - sudo python setup.py nosetests
+  - py.test
 
 after_success:
   - coveralls
