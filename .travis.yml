@@ -18,4 +18,4 @@ script:
   - sudo py.test
 
 after_success:
-  - coveralls
+  - sudo py.test --cov-report term-missing --cov=server_check tests/

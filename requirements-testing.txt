@@ -1,5 +1,5 @@
-coveralls
 betamax
 pytest
+pytest-cov
 requests
 MySQL-python
