@@ -5,7 +5,7 @@ import string
 import socket
 import MySQLdb
 import re
-import time
+# import time
 from exceptions import TestException
 
 
@@ -30,17 +30,14 @@ def test_mysql_connection():
     cur.execute("SELECT COUNT(User) AS usercount FROM user")
     if cur.rowcount:
         row = cur.fetchone()
+        con.close()
         return "MySQL connection OK: %s users." % (row['usercount'])
 
-    if con:
-        con.close()
 
+def create_random_domain(adminuser, adminpass, session=requests.Session(), user=None):
+    if user is None:
+        user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
 
-def create_random_domain(adminuser, adminpass, session=None):
-    if session is None:
-        session = requests.Session()
-
-    user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
     domain = user + ".nl"
     password = ""
     while not validPassword(password):
@@ -106,10 +103,7 @@ def validPassword(password):
     return False
 
 
-def remove_account(adminuser, adminpass, user, session=None):
-    if session is None:
-        session = requests.Session()
-
+def remove_account(adminuser, adminpass, user, session=requests.Session()):
     account = {
         'delete': 'yes',
         'confirmed': 'Confirm',
@@ -130,10 +124,7 @@ def remove_account(adminuser, adminpass, user, session=None):
     return True
 
 
-def enable_spamassassin(user, passwd, domain, session=None):
-    time.sleep(1)
-    if session is None:
-        session = requests.Session()
+def enable_spamassassin(user, passwd, domain, session=requests.Session()):
 
     request = {
         'action': 'save',
