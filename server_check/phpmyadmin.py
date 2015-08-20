@@ -1,6 +1,6 @@
 # apt-get install python-requests
 import requests
-from bcolors import ok, error
+from exceptions import TestException
 
 
 def test_phpmyadmin():
@@ -17,8 +17,8 @@ def test_phpmyadmin():
             elif key == 'passwd':
                 passwd = value
 
-    r = requests.get('http://localhost/phpmyadmin/', auth=(user + "a", passwd))
+    r = requests.get('http://localhost/phpmyadmin/', auth=(user, passwd))
     if r.status_code == 200 and "User: %s@localhost" % user in r.text:
-        ok("Logged in and authenticated")
+        return "Logged in and authenticated"
     else:
-        error("Unable to log in to phpMyAdmin with the '%s' user." % user)
+        raise TestException("Unable to log in to phpMyAdmin with the '%s' user." % user)

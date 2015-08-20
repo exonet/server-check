@@ -1,10 +1,10 @@
-from bcolors import ok, error
 import ftplib
 import time
 import subprocess
+from exceptions import TestException
 
 
-def test_ftp(user, domain, password, restart=False, ssl=False):
+def test_ftp(user, domain, password, ssl=False):
 
     # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually
     # pure-pw mkdb /etc/pureftpd.pdb -f /etc/proftpd.passwd
@@ -12,24 +12,10 @@ def test_ftp(user, domain, password, restart=False, ssl=False):
     ret.wait()
 
     # See if we can connect to FTP and upload, download and remove a file
-    try:
-        if not ssl:
-            conn = ftplib.FTP('localhost')
-        else:
-            conn = ftplib.FTP_TLS('localhost')
-
-    except ftplib.error_perm, e:
-        error("Permanent error: %s" % (e))
-        return
-    except ftplib.error_temp, e:
-        error("Temporary error: %s" % (e))
-        return
-    except ftplib.error_proto, e:
-        error("Protocol error: %s" % (e))
-        return
-    except ftplib.error_reply, e:
-        error("Unexpected reply error: %s" % (e))
-        return
+    if not ssl:
+        conn = ftplib.FTP('localhost')
+    else:
+        conn = ftplib.FTP_TLS('localhost')
 
     # Login to the server
     tries = 0
@@ -47,111 +33,35 @@ def test_ftp(user, domain, password, restart=False, ssl=False):
             tries += 1
             time.sleep(1)
             err = e
-        except ftplib.error_proto, e:
-            error("Protocol error: %s" % (e))
-            return
-        except ftplib.error_reply, e:
-            error("Unexpected reply error: %s" % (e))
-            return
 
     if tries >= 3:
-        error("Permanent error: %s" % (err))
-        return
+        raise TestException("Permanent error: %s" % (err))
 
     # switch to secure data connection
     if ssl:
-        try:
-            conn.prot_p()
-        except ftplib.error_perm, e:
-            error("Permanent error: %s" % (e))
-            return
-        except ftplib.error_temp, e:
-            error("Temporary error: %s" % (e))
-            return
-        except ftplib.error_proto, e:
-            error("Protocol error: %s" % (e))
-            return
-        except ftplib.error_reply, e:
-            error("Unexpected reply error: %s" % (e))
-            return
+        conn.prot_p()
 
     # Upload a file
-    try:
-        with open("ftp_test.txt", "w") as fh:
-            fh.write("this is a test")
+    with open("ftp_test.txt", "w") as fh:
+        fh.write("this is a test")
 
-        with open("ftp_test.txt", "r") as fh:
-            conn.storlines("STOR ftp_test.txt", fh)
-
-        ok("Upload of ftp_test.txt succesful.")
-    except ftplib.error_perm, e:
-        error("Permanent error: %s" % (e))
-        return
-    except ftplib.error_temp, e:
-        error("Temporary error: %s" % (e))
-        return
-    except ftplib.error_proto, e:
-        error("Protocol error: %s" % (e))
-        return
-    except ftplib.error_reply, e:
-        error("Unexpected reply error: %s" % (e))
-        return
+    with open("ftp_test.txt", "r") as fh:
+        conn.storlines("STOR ftp_test.txt", fh)
 
     # Download a file
-    try:
-        conn.retrlines("RETR ftp_test.txt", download_handler)
-
-        ok("Download of ftp_test.txt succesful.")
-    except ftplib.error_perm, e:
-        error("Permanent error: %s" % (e))
-        return
-    except ftplib.error_temp, e:
-        error("Temporary error: %s" % (e))
-        return
-    except ftplib.error_proto, e:
-        error("Protocol error: %s" % (e))
-        return
-    except ftplib.error_reply, e:
-        error("Unexpected reply error: %s" % (e))
-        return
+    conn.retrlines("RETR ftp_test.txt", download_handler)
 
     # Delete a file
-    try:
-        conn.delete("ftp_test.txt")
-
-        ok("Delete of ftp_test.txt succesful.")
-    except ftplib.error_perm, e:
-        error("Permanent error: %s" % (e))
-        return
-    except ftplib.error_temp, e:
-        error("Temporary error: %s" % (e))
-        return
-    except ftplib.error_proto, e:
-        error("Protocol error: %s" % (e))
-        return
-    except ftplib.error_reply, e:
-        error("Unexpected reply error: %s" % (e))
-        return
+    conn.delete("ftp_test.txt")
 
     # Disconnect
-    try:
-        conn.quit()
-    except ftplib.error_perm, e:
-        error("Permanent error: %s" % (e))
-        return
-    except ftplib.error_temp, e:
-        error("Temporary error: %s" % (e))
-        return
-    except ftplib.error_proto, e:
-        error("Protocol error: %s" % (e))
-        return
-    except ftplib.error_reply, e:
-        error("Unexpected reply error: %s" % (e))
-        return
+    conn.quit()
+
+    return "Able to log in, upload, download and remove testfile via FTP%s." % ("_SSL" if ssl else "")
 
 
 def download_handler(line):
     if "this is a test" in line:
-        ok("Downloaded file contains test string.")
+        return True
     else:
-        error("Line not expected: %s" % line)
+        raise TestException("Line not expected: %s" % line)

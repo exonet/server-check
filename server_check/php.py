@@ -1,5 +1,4 @@
 import subprocess
-import sys
 import requests
 import random
 import string
@@ -7,28 +6,24 @@ import socket
 import pwd
 import os
 import time
-from bcolors import ok, error
+from exceptions import TestException
 
 
 def check_config():
     output = subprocess.check_output(["php", "-v"], stderr=subprocess.STDOUT)
 
     if 'error' in output.lower() or 'warning' in output.lower():
-        error("Error or warning in output:\n%s" % output)
-        sys.exit(-1)
+        raise TestException("Error or warning in output:\n%s" % output)
+
+    return "PHP config does not contain 'error' or 'warning'"
 
 
 def test_session_handler(user, domain):
     checkstring = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
-    try:
-        userent = pwd.getpwnam(user)
-    except StandardError, e:
-        error("User %s does not seem to exist on this system: %s" % (user, e))
-        sys.exit(-1)
+    userent = pwd.getpwnam(user)
 
     if userent is None:
-        error("User %s does not seem to exist on this system." % user)
-        sys.exit(-1)
+        raise TestException("User %s does not seem to exist on this system." % user)
 
     uid = userent[2]
     gid = userent[3]
@@ -62,10 +57,9 @@ def test_session_handler(user, domain):
     # Request the second page, this should return the checkstring
     r = s.get('http://www.%s/session_test_2.php' % domain)
     if r.text == checkstring:
-        ok("Session handler OK.")
+        return "Session handler OK."
     else:
-        error("Session handler not working: %s != %s" % (r.text, checkstring))
-        sys.exit(-1)
+        raise TestException("Session handler not working: %s != %s" % (r.text, checkstring))
 
     # remove the entry from the hosts file
     with open("/etc/hosts", "r+") as fh:
@@ -77,15 +71,10 @@ def test_session_handler(user, domain):
 
 
 def test_mod_ruid2(user, domain):
-    try:
-        userent = pwd.getpwnam(user)
-    except StandardError, e:
-        error("User %s does not seem to exist on this system: %s" % (user, e))
-        sys.exit(-1)
+    userent = pwd.getpwnam(user)
 
     if userent is None:
-        error("User %s does not seem to exist on this system." % user)
-        sys.exit(-1)
+        raise TestException("User %s does not seem to exist on this system." % user)
 
     uid = userent[2]
     gid = userent[3]
@@ -107,25 +96,22 @@ def test_mod_ruid2(user, domain):
     try:
         os.remove("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain))
     except:
-        pass  # We ignore errors because the file probably didn't exist to begin with
+        pass  # We ignore raise TestExceptions because the file probably didn't exist to begin with
 
     # Access the php file so the file is created
     r = requests.get('http://www.%s/mod_ruid2_test.php' % domain)
     if r.status_code != 200:
-        error("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
-              % (domain, r.status_code, r.text))
+        raise TestException("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
+                            % (domain, r.status_code, r.text))
     else:
         # See if the file was created and ownership is right
-        try:
-            fuid = os.stat("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain)).st_uid
-            fgid = os.stat("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain)).st_gid
-            if fuid == uid and fgid == gid:
-                ok("mod_ruid2 enabled and working.")
-            else:
-                error("file /home/%s/domains/%s/public_html/mod_ruid2.txt has incorrect ownership: uid is %s (expected:\
- %s), gid is %s (expected: %s)" % (user, domain, fuid, uid, fgid, gid))
-        except StandardError, e:
-            error("Unable to stat /home/%s/domains/%s/public_html/mod_ruid2.txt: %s" % (user, domain, e))
+        fuid = os.stat("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain)).st_uid
+        fgid = os.stat("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain)).st_gid
+        if fuid == uid and fgid == gid:
+            return "mod_ruid2 enabled and working."
+        else:
+            raise TestException("file /home/%s/domains/%s/public_html/mod_ruid2.txt has incorrect ownership: uid is %s\
+                    (expected: %s), gid is %s (expected: %s)" % (user, domain, fuid, uid, fgid, gid))
 
     # remove the entry from the hosts file
     with open("/etc/hosts", "r+") as fh:
@@ -137,15 +123,10 @@ def test_mod_ruid2(user, domain):
 
 
 def test_mail(user, domain):
-    try:
-        userent = pwd.getpwnam(user)
-    except StandardError, e:
-        error("User %s does not seem to exist on this system: %s" % (user, e))
-        sys.exit(-1)
+    userent = pwd.getpwnam(user)
 
     if userent is None:
-        error("User %s does not seem to exist on this system." % user)
-        sys.exit(-1)
+        raise TestException("User %s does not seem to exist on this system." % user)
 
     uid = userent[2]
     gid = userent[3]
@@ -167,18 +148,17 @@ def test_mail(user, domain):
     # Access the php file so the mail is sent
     r = requests.get('http://www.%s/mail_test.php' % domain)
     if r.status_code != 200:
-        error("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
-              % (domain, r.status_code, r.text))
+        raise TestException("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
+                            % (domain, r.status_code, r.text))
     else:
         # See if OK was in the response
         if 'OK' in r.text:
-            ok("mail sent succesfully")
+            return "mail sent succesfully"
 
             # Sleep a second to ensure the mail has been delivered
             time.sleep(1)
         else:
-            error("mail could not be sent (output = '%s'!)" % r.text)
-            sys.exit(-1)
+            raise TestException("mail could not be sent (output = '%s'!)" % r.text)
 
     # remove the entry from the hosts file
     with open("/etc/hosts", "r+") as fh:

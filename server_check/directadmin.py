@@ -2,13 +2,11 @@
 import requests
 import random
 import string
-import sys
 import socket
 import MySQLdb
 import re
-from bcolors import ok, error
-import shutil
 import time
+from exceptions import TestException
 
 
 def test_mysql_connection():
@@ -27,22 +25,15 @@ def test_mysql_connection():
 
     # Try to create a connection
     con = None
-    try:
-        con = MySQLdb.connect('localhost', user, passwd, 'mysql')
-        cur = con.cursor(MySQLdb.cursors.DictCursor)
-        try:
-            cur.execute("SELECT COUNT(User) AS usercount FROM user")
-            if cur.rowcount:
-                row = cur.fetchone()
-                return ok("MySQL connection OK: %s users." % (row['usercount']))
-        except StandardError, e:
-            return error("Error running SELECT query: %s" % e)
+    con = MySQLdb.connect('localhost', user, passwd, 'mysql')
+    cur = con.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT COUNT(User) AS usercount FROM user")
+    if cur.rowcount:
+        row = cur.fetchone()
+        return "MySQL connection OK: %s users." % (row['usercount'])
 
-    except StandardError, e:
-        return error("Error connecting to MySQL: %s" % e)
-    finally:
-        if con:
-            con.close()
+    if con:
+        con.close()
 
 
 def create_random_domain(adminuser, adminpass, session=None):
@@ -98,13 +89,9 @@ def create_random_domain(adminuser, adminpass, session=None):
     )
 
     if "DirectAdmin Login Page" in r.text:
-        print error("DirectAdmin username or password incorrect")
-        sys.exit(-1)
+        raise TestException("DirectAdmin username or password incorrect")
     elif "error=1" in r.text:
-        print error("Unable to create DirectAdmin user %s: %s" % (user, r.text))
-        sys.exit(-1)
-
-    print ok("User %s (password: %s) with domain %s created" % (user, password, domain))
+        raise TestException("Unable to create DirectAdmin user %s: %s" % (user, r.text))
 
     return domain, user, password
 
@@ -119,7 +106,7 @@ def validPassword(password):
     return False
 
 
-def remove_account(adminuser, adminpass, user, session):
+def remove_account(adminuser, adminpass, user, session=None):
     if session is None:
         session = requests.Session()
 
@@ -136,16 +123,15 @@ def remove_account(adminuser, adminpass, user, session):
     )
 
     if "DirectAdmin Login Page" in r.text:
-        print error("DirectAdmin username or password incorrect")
-        sys.exit(-1)
+        raise TestException("DirectAdmin username or password incorrect")
     elif "error=1" in r.text:
-        print error("Unable to delete DirectAdmin user %s: %s" % (user, r.text))
-        sys.exit(-1)
+        raise TestException("Unable to delete DirectAdmin user %s: %s" % (user, r.text))
 
     return True
 
 
-def enable_spamassassin(adminuser, adminpass, domain, session):
+def enable_spamassassin(user, passwd, domain, session=None):
+    time.sleep(1)
     if session is None:
         session = requests.Session()
 
@@ -162,19 +148,15 @@ def enable_spamassassin(adminuser, adminpass, domain, session):
         'whitelist_from': '',
     }
 
-    time.sleep(1)
-
     r = session.post(
         'http://localhost:2222/CMD_API_SPAMASSASSIN',
         data=request,
-        auth=(adminuser, adminpass)
+        auth=(user, passwd)
     )
 
     if "DirectAdmin Login Page" in r.text:
-        print error("DirectAdmin username or password incorrect")
-        sys.exit(-1)
+        raise TestException("DirectAdmin username or password incorrect")
     elif "error=1" in r.text:
-        print error("Unable to enable SpamAssassin for %s: %s" % (domain, r.text))
-        sys.exit(-1)
+        raise TestException("Unable to enable SpamAssassin for %s: %s" % (domain, r.text))
 
     return True
