@@ -3,8 +3,8 @@ import requests
 from exceptions import TestException
 
 
-def test_roundcube(url='http://localhost/roundcube/'):
-    r = requests.get(url)
+def test_roundcube(url='http://localhost/roundcube/', session=requests.Session()):
+    r = session.get(url)
     if r.status_code == 200 and "Roundcube Webmail Login" in r.text:
         return "Roundcube accessible"
     else:
