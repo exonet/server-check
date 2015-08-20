@@ -10,9 +10,9 @@ install:
   - sudo pip install -e .
 
 before_script:
-  - mdkir -p /usr/local/directadmin/conf
-  - echo 'user=root' > /usr/local/directadmin/conf/mysql.conf
-  - echo 'passwd=' >> /usr/local/directadmin/conf/mysql.conf
+  - sudo mkdir -p /usr/local/directadmin/conf
+  - echo 'user=root' | sudo tee /usr/local/directadmin/conf/mysql.conf
+  - echo 'passwd=' | sudo tee -a /usr/local/directadmin/conf/mysql.conf
 
 script:
   - sudo py.test
