@@ -147,7 +147,5 @@ def enable_spamassassin(user, passwd, domain, session=requests.Session()):
 
     if "DirectAdmin Login Page" in r.text:
         raise TestException("DirectAdmin username or password incorrect")
-    elif "error=1" in r.text:
-        raise TestException("Unable to enable SpamAssassin for %s: %s" % (domain, r.text))
 
     return True
