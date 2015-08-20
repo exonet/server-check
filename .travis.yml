@@ -9,6 +9,11 @@ install:
   - sudo pip install -r requirements-testing.txt
   - sudo pip install -e .
 
+before_script:
+  - mdkir -p /usr/local/directadmin/conf
+  - echo 'user=root' > /usr/local/directadmin/conf/mysql.conf
+  - echo 'passwd=' >> /usr/local/directadmin/conf/mysql.conf
+
 script:
   - sudo py.test
 
