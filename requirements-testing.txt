@@ -1,4 +1,4 @@
-betamax
+mock
 pytest
 pytest-cov
 requests

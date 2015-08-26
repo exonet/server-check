@@ -2,7 +2,7 @@ import imaplib
 from exceptions import TestException
 
 
-def test_imap(user, domain, password, ssl=False):
+def test_imap(user, domain, password, ssl=False, imaplib=imaplib):
 
     # Open an imap connection to localhost
     if not ssl:
@@ -28,4 +28,4 @@ def test_imap(user, domain, password, ssl=False):
     if 'da_server_check mail test' in data[0][1]:
         return "Test message retrieved via Dovecot IMAP%s." % ("_SSL" if ssl else "")
     else:
-        raise TestException("Retrieved message does not contain test string:\n%s%s" % (data[0][1]))
+        raise TestException("Retrieved message does not contain test string:\n%s" % (data[0][1]))

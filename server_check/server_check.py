@@ -13,6 +13,7 @@ try:
     import spamassassin
     import phpmyadmin
     import roundcube
+    import subprocess
 
     from bcolors import header, bcolors, ok, error, warning
 except ImportError, e:
@@ -50,7 +51,9 @@ def parse_args(arguments=None):
     return args
 
 
-def main(argv=None):
+def main(argv=None, os=os, raw_input=raw_input, getpass=getpass, subprocess=subprocess, directadmin=directadmin,
+         php=php, pop3=pop3, imap=imap, ftp=ftp, smtp=smtp, roundcube=roundcube, phpmyadmin=phpmyadmin,
+         spamassassin=spamassassin):
 
     if os.geteuid() != 0:
         print warning("This script requires root privileges to run.")
@@ -74,12 +77,16 @@ def main(argv=None):
             # Create a new user in DirectAdmin.
             domain, user, password = directadmin.create_random_domain(adminuser, adminpass)
 
+            # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually
+            # pure-pw mkdb /etc/pureftpd.pdb -f /etc/proftpd.passwd
+            ret = subprocess.Popen(["/usr/bin/pure-pw", "mkdb", "/etc/pureftpd.pdb", "-f", "/etc/proftpd.passwd"])
+            ret.wait()
+
             # Enable SpamAssassin
             directadmin.enable_spamassassin(user, password, domain)
 
-            sys.exit(0)
-
         else:
+            print "here 1"
             print error("Only DirectAdmin servers are currently supported!")
             sys.exit(-1)
 
@@ -131,3 +138,5 @@ def main(argv=None):
         directadmin.remove_account(adminuser, adminpass, user)
     except Exception as err:
         print error(err.message)
+
+    return True

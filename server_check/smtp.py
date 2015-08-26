@@ -1,7 +1,7 @@
 import smtplib
 
 
-def test_smtp(user, domain, password, ssl=False, submission=False):
+def test_smtp(user, domain, password, ssl=False, submission=False, smtplib=smtplib):
 
     # See if we can connect to exim and send a message
     port = 25 if not submission else 587

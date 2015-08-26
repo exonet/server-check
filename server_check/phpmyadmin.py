@@ -3,7 +3,7 @@ import requests
 from exceptions import TestException
 
 
-def test_phpmyadmin():
+def test_phpmyadmin(session=requests.Session()):
     # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf
     user = ""
     passwd = ""
@@ -17,7 +17,7 @@ def test_phpmyadmin():
             elif key == 'passwd':
                 passwd = value
 
-    r = requests.get('http://localhost/phpmyadmin/', auth=(user, passwd))
+    r = session.get('http://localhost/phpmyadmin/', auth=(user, passwd))
     if r.status_code == 200 and "User: %s@localhost" % user in r.text:
         return "Logged in and authenticated"
     else:

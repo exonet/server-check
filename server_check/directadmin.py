@@ -1,11 +1,11 @@
-# apt-get install python-requests
+import os
 import requests
 import random
 import string
 import socket
 import MySQLdb
 import re
-# import time
+import subprocess
 from exceptions import TestException
 
 
@@ -34,11 +34,10 @@ def test_mysql_connection():
         return "MySQL connection OK: %s users." % (row['usercount'])
 
 
-def create_random_domain(adminuser, adminpass, session=requests.Session(), user=None):
-    if user is None:
-        user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
-
+def create_random_domain(adminuser, adminpass, session=requests.Session()):
+    user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
     domain = user + ".nl"
+
     password = ""
     while not validPassword(password):
         password = ''.join(random.SystemRandom().choice(
@@ -90,6 +89,18 @@ def create_random_domain(adminuser, adminpass, session=requests.Session(), user=
     elif "error=1" in r.text:
         raise TestException("Unable to create DirectAdmin user %s: %s" % (user, r.text))
 
+    # In order to make sure we're connecting to the right virtualhost, we must add the domain to /etc/hosts
+    ip = socket.gethostbyname(socket.gethostname())  # Note, this might return 127.0.0.1
+
+    with open("/etc/hosts", "a") as fh:
+        fh.write("%s\t\twww.%s\n" % (ip, domain))
+
+    # Give httpd a reload to ensure the hostname is picked up
+    DEVNULL = open(os.devnull, 'wb')
+    ret = subprocess.Popen(["/etc/init.d/httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
+    ret.wait()
+    DEVNULL.close()
+
     return domain, user, password
 
 
@@ -120,6 +131,14 @@ def remove_account(adminuser, adminpass, user, session=requests.Session()):
         raise TestException("DirectAdmin username or password incorrect")
     elif "error=1" in r.text:
         raise TestException("Unable to delete DirectAdmin user %s: %s" % (user, r.text))
+
+    # remove the entry from the hosts file
+    with open("/etc/hosts", "r+") as fh:
+        content = fh.read()
+        fh.seek(0)
+        for line in content:
+            if user + ".nl" not in line:
+                fh.write(line)
 
     return True
 
