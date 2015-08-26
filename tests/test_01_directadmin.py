@@ -4,10 +4,26 @@ from server_check import directadmin
 from mock import Mock
 import requests
 import collections
+import MySQLdb
+from MySQLdb.cursors import DictCursor, BaseCursor
+from MySQLdb.connections import Connection
 
 
 def test_00_mysql_connection():
-    assert 'OK' in directadmin.test_mysql_connection()
+    mockdb = Mock(spec=MySQLdb)
+    mockCon = Mock(spec=Connection)
+    mockCursor = Mock(spec=BaseCursor)
+
+    cursorSpec = {'fetchone.return_value': {'usercount': 0}, 'rowcount.return_value': 1}
+    mockCursor.configure_mock(**cursorSpec)
+
+    conSpec = {'cursor.return_value': mockCursor}
+    mockCon.configure_mock(**conSpec)
+
+    dbSpec = {'connect.return_value': mockCon}
+    mockdb.configure_mock(**dbSpec)
+
+    assert 'OK' in directadmin.test_mysql_connection(mockdb)
 
 
 def test_01_create_random_domain(domain, session):

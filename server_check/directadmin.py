@@ -9,7 +9,7 @@ import subprocess
 from exceptions import TestException
 
 
-def test_mysql_connection():
+def test_mysql_connection(MySQLdb=MySQLdb):
     # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf
     user = ""
     passwd = ""
