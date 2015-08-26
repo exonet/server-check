@@ -9,12 +9,15 @@ import subprocess
 from exceptions import TestException
 
 
-def test_mysql_connection(MySQLdb=MySQLdb):
+def test_mysql_connection():
     # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf
     user = ""
     passwd = ""
     with open('/usr/local/directadmin/conf/mysql.conf', 'r') as fh:
-        for line in fh:
+        data = fh.read()
+        for line in data.strip().split("\n"):
+            print line
+            print "bla"
             # user=xxx
             # passwd=xxxx
             key, value = line.strip().split('=')
@@ -34,7 +37,7 @@ def test_mysql_connection(MySQLdb=MySQLdb):
         return "MySQL connection OK: %s users." % (row['usercount'])
 
 
-def create_random_domain(adminuser, adminpass, session=requests.Session()):
+def create_random_domain(adminuser, adminpass):
     user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
     domain = user + ".nl"
 
@@ -78,7 +81,7 @@ def create_random_domain(adminuser, adminpass, session=requests.Session()):
         'ip': ip
     }
 
-    r = session.post(
+    r = requests.post(
         'http://localhost:2222/CMD_API_ACCOUNT_USER',
         data=account,
         auth=(adminuser, adminpass)
@@ -90,8 +93,6 @@ def create_random_domain(adminuser, adminpass, session=requests.Session()):
         raise TestException("Unable to create DirectAdmin user %s: %s" % (user, r.text))
 
     # In order to make sure we're connecting to the right virtualhost, we must add the domain to /etc/hosts
-    ip = socket.gethostbyname(socket.gethostname())  # Note, this might return 127.0.0.1
-
     with open("/etc/hosts", "a") as fh:
         fh.write("%s\t\twww.%s\n" % (ip, domain))
 
@@ -114,14 +115,14 @@ def validPassword(password):
     return False
 
 
-def remove_account(adminuser, adminpass, user, session=requests.Session()):
+def remove_account(adminuser, adminpass, user):
     account = {
         'delete': 'yes',
         'confirmed': 'Confirm',
         'select0': user
     }
 
-    r = session.post(
+    r = requests.post(
         'http://localhost:2222/CMD_API_SELECT_USERS',
         data=account,
         auth=(adminuser, adminpass)
@@ -143,7 +144,7 @@ def remove_account(adminuser, adminpass, user, session=requests.Session()):
     return True
 
 
-def enable_spamassassin(user, passwd, domain, session=requests.Session()):
+def enable_spamassassin(user, passwd, domain):
 
     request = {
         'action': 'save',
@@ -158,7 +159,7 @@ def enable_spamassassin(user, passwd, domain, session=requests.Session()):
         'whitelist_from': '',
     }
 
-    r = session.post(
+    r = requests.post(
         'http://localhost:2222/CMD_API_SPAMASSASSIN',
         data=request,
         auth=(user, passwd)

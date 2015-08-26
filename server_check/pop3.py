@@ -3,7 +3,7 @@ import time
 from exceptions import TestException
 
 
-def test_pop3(user, domain, password, ssl=False, poplib=poplib):
+def test_pop3(user, domain, password, ssl=False):
     # Sleep a while to allow the previous test to deliver the message in the mailbox
     time.sleep(3)
 

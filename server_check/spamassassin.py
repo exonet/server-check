@@ -1,9 +1,8 @@
 import poplib
-# import time
 from exceptions import TestException
 
 
-def test_spamassassin(user, domain, password, poplib=poplib):
+def test_spamassassin(user, domain, password):
 
     # Open a pop3 connection to localhost
     conn = poplib.POP3('localhost')

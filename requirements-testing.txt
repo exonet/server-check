@@ -1,5 +1,6 @@
 mock
 pytest
 pytest-cov
+pytest-mock
 requests
 MySQL-python

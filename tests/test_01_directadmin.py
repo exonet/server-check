@@ -1,7 +1,8 @@
 import pytest
 from server_check import exceptions
 from server_check import directadmin
-from mock import Mock
+from mock import Mock, MagicMock, patch
+import mock
 import requests
 import collections
 import MySQLdb
@@ -10,56 +11,34 @@ from MySQLdb.connections import Connection
 
 
 def test_00_mysql_connection():
-    mockdb = Mock(spec=MySQLdb)
-    mockCon = Mock(spec=Connection)
-    mockCursor = Mock(spec=BaseCursor)
 
-    cursorSpec = {'fetchone.return_value': {'usercount': 0}, 'rowcount.return_value': 1}
-    mockCursor.configure_mock(**cursorSpec)
-
-    conSpec = {'cursor.return_value': mockCursor}
-    mockCon.configure_mock(**conSpec)
-
-    dbSpec = {'connect.return_value': mockCon}
-    mockdb.configure_mock(**dbSpec)
-
-    assert 'OK' in directadmin.test_mysql_connection(mockdb)
+    mocked_open = mock.mock_open(read_data='user=foo\npasswd=bar\n')
+    with patch('MySQLdb.__init__'), patch('MySQLdb.connect'), patch('server_check.directadmin.open', mocked_open):
+        assert 'OK' in directadmin.test_mysql_connection()
 
 
-def test_01_create_random_domain(domain, session):
-    assert domain.user
-    assert domain.password
-    assert domain.user in domain.domain
+def test_01_create_random_domain(domain):
+    with patch('requests.post') as post, patch('server_check.directadmin.open'), patch('subprocess.Popen'):
+        domain, user, password = directadmin.create_random_domain("", "")
+        assert domain
+        assert password
+        assert user in domain
 
-    # modify the session to return login page
-    postreturn = collections.namedtuple('post', 'text, status_code')
-    postreturn.text = "DirectAdmin Login Page"
-    sessionSpec = {'post.return_value': postreturn}
-    session.configure_mock(**sessionSpec)
+        # again but with false credentials
+        # modify the session to return login page
+        postreturn = collections.namedtuple('post', 'text, status_code')
+        postreturn.text = "DirectAdmin Login Page"
+        post.return_value=postreturn
+        with pytest.raises(exceptions.TestException) as err:
+            domain, user, password = directadmin.create_random_domain("", "")
+            assert 'DirectAdmin username or password incorrect' in err.value.message
 
-    # again but with false credentials
-    with pytest.raises(exceptions.TestException) as err:
-        domain, user, password = directadmin.create_random_domain("", "", session)
-    assert 'DirectAdmin username or password incorrect' in err.value.message
+        postreturn.text = 'error=1'
+        post.return_value=postreturn
 
-    # again but mock the get return value to trigger error
-    getreturn = collections.namedtuple('getreturn', 'text')
-    getreturn.text = 'error=1'
-
-    mockSession = Mock(spec=requests.Session)
-    sessionSpec = {'post.return_value': getreturn}
-    mockSession.configure_mock(**sessionSpec)
-
-    # Again with modified return handler for session
-    with pytest.raises(exceptions.TestException) as err:
-            domain, user, password = directadmin.create_random_domain("", "", session=mockSession)
-    assert 'Unable to create DirectAdmin user' in err.value.message
-
-    # Reset session
-    postreturn = collections.namedtuple('post', 'text, status_code')
-    postreturn.text = "error=0"
-    sessionSpec = {'post.return_value': postreturn}
-    session.configure_mock(**sessionSpec)
+        with pytest.raises(exceptions.TestException) as err:
+                domain, user, password = directadmin.create_random_domain("", "")
+        assert 'Unable to create DirectAdmin user' in err.value.message
 
 
 def test_02_validPassword():
@@ -67,40 +46,35 @@ def test_02_validPassword():
     assert directadmin.validPassword('abc') is False
 
 
-def test_03_enable_spamassassin(session, domain):
-    assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain, session) is True
+def test_03_enable_spamassassin(domain):
+    with patch('requests.post') as post:
+        assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain) is True
 
-    # again but with false credentials
-    postreturn = collections.namedtuple('post', 'text, status_code')
-    postreturn.text = "DirectAdmin Login Page"
-    sessionSpec = {'post.return_value': postreturn}
-    session.configure_mock(**sessionSpec)
-    with pytest.raises(exceptions.TestException) as err:
-        directadmin.enable_spamassassin(domain.user, domain.password, domain.domain, session)
-    assert 'DirectAdmin username or password incorrect' in err.value.message
-
-    # Reset session
-    postreturn.text = "error=0"
-    sessionSpec = {'post.return_value': postreturn}
-    session.configure_mock(**sessionSpec)
+        # again but with false credentials
+        postreturn = collections.namedtuple('post', 'text, status_code')
+        postreturn.text = "DirectAdmin Login Page"
+        post.return_value=postreturn
+        with pytest.raises(exceptions.TestException) as err:
+            directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
+        assert 'DirectAdmin username or password incorrect' in err.value.message
 
 
-def test_04_remove_account(session, domain):
-    assert directadmin.remove_account("", "", domain.user, session) is True
+def test_04_remove_account(domain):
+    mocked_open = mock.mock_open(read_data='user=foo\npasswd=bar\n')
+    with patch('requests.post') as post, patch('server_check.directadmin.open', mocked_open):
+        assert directadmin.remove_account("", "", domain.user) is True
 
-    # again but with false credentials
-    postreturn = collections.namedtuple('post', 'text, status_code')
-    postreturn.text = "DirectAdmin Login Page"
-    sessionSpec = {'post.return_value': postreturn}
-    session.configure_mock(**sessionSpec)
-    with pytest.raises(exceptions.TestException) as err:
-        directadmin.remove_account("", "", domain.user, session)
-    assert 'DirectAdmin username or password incorrect' in err.value.message
+        # again but with false credentials
+        postreturn = collections.namedtuple('post', 'text, status_code')
+        postreturn.text = "DirectAdmin Login Page"
+        post.return_value=postreturn
+        with pytest.raises(exceptions.TestException) as err:
+            directadmin.remove_account("", "", domain.user)
+        assert 'DirectAdmin username or password incorrect' in err.value.message
 
-    # again but with an account we already deleted
-    postreturn.text = "error=1"
-    sessionSpec = {'post.return_value': postreturn}
-    session.configure_mock(**sessionSpec)
-    with pytest.raises(exceptions.TestException) as err:
-        directadmin.remove_account("", "", domain.user, session)
-    assert 'Unable to delete DirectAdmin user %s' % domain.user in err.value.message
+        # again but with an account we already deleted
+        postreturn.text = "error=1"
+        post.return_value=postreturn
+        with pytest.raises(exceptions.TestException) as err:
+            directadmin.remove_account("", "", domain.user)
+        assert 'Unable to delete DirectAdmin user %s' % domain.user in err.value.message

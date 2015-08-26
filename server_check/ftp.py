@@ -3,7 +3,7 @@ import time
 from exceptions import TestException
 
 
-def test_ftp(user, domain, password, ssl=False, ftplib=ftplib):
+def test_ftp(user, domain, password, ssl=False):
 
     # See if we can connect to FTP and upload, download and remove a file
     if not ssl:
@@ -15,9 +15,13 @@ def test_ftp(user, domain, password, ssl=False, ftplib=ftplib):
     tries = 0
     while tries < 3:
         try:
-            conn.login(user, password)
+            ret = conn.login(user, password)
+            print conn.foobar()
+            print conn.foobabazr()
+            print "foo: %s" % ret
             break
         except Exception:
+            print "here"
             tries += 1
             time.sleep(1)
 

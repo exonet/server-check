@@ -2,7 +2,7 @@ import imaplib
 from exceptions import TestException
 
 
-def test_imap(user, domain, password, ssl=False, imaplib=imaplib):
+def test_imap(user, domain, password, ssl=False):
 
     # Open an imap connection to localhost
     if not ssl:

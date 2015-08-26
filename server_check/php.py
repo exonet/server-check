@@ -8,7 +8,7 @@ import time
 from exceptions import TestException
 
 
-def check_config(subprocess=subprocess):
+def check_config():
     output = subprocess.check_output(["php", "-v"], stderr=subprocess.STDOUT)
 
     if 'error' in output.lower() or 'warning' in output.lower():
@@ -17,7 +17,7 @@ def check_config(subprocess=subprocess):
     return "PHP config does not contain 'error' or 'warning'"
 
 
-def test_session_handler(user, domain, checkstring=None, session=requests.Session(), pwd=pwd):
+def test_session_handler(user, domain, checkstring=None):
     # Sleep a second to ensure the httpd has restarted
     time.sleep(1)
 
@@ -54,7 +54,7 @@ def test_session_handler(user, domain, checkstring=None, session=requests.Sessio
         raise TestException("Session handler not working: %s != %s" % (r.text, checkstring))
 
 
-def test_mod_ruid2(user, domain, session=requests.Session(), pwd=pwd, os=os):
+def test_mod_ruid2(user, domain):
     try:
         userent = pwd.getpwnam(user)
     except:
@@ -92,7 +92,7 @@ def test_mod_ruid2(user, domain, session=requests.Session(), pwd=pwd, os=os):
                     (expected: %s), gid is %s (expected: %s)" % (user, domain, fuid, uid, fgid, gid))
 
 
-def test_mail(user, domain, session=requests.Session(), pwd=pwd):
+def test_mail(user, domain):
     try:
         userent = pwd.getpwnam(user)
     except:

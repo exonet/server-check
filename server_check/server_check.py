@@ -51,9 +51,7 @@ def parse_args(arguments=None):
     return args
 
 
-def main(argv=None, os=os, raw_input=raw_input, getpass=getpass, subprocess=subprocess, directadmin=directadmin,
-         php=php, pop3=pop3, imap=imap, ftp=ftp, smtp=smtp, roundcube=roundcube, phpmyadmin=phpmyadmin,
-         spamassassin=spamassassin):
+def main(argv=None):
 
     if os.geteuid() != 0:
         print warning("This script requires root privileges to run.")
