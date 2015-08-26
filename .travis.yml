@@ -13,9 +13,10 @@ before_script:
   - sudo mkdir -p /usr/local/directadmin/conf
   - echo 'user=root' | sudo tee /usr/local/directadmin/conf/mysql.conf
   - echo 'passwd=' | sudo tee -a /usr/local/directadmin/conf/mysql.conf
+  - sudo touch /usr/local/directadmin/conf/directadmin.conf
 
 script:
   - sudo py.test
 
-after_success:
-  - sudo py.test --cov-report term-missing --cov=server_check tests/
+after_script:
+  - sudo py.test --cov-report term-missing --cov=server_check --cov-fail-under=95 tests/
