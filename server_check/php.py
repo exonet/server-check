@@ -19,7 +19,7 @@ def check_config():
 
 def test_session_handler(user, domain, checkstring=None):
     # Sleep a second to ensure the httpd has restarted
-    time.sleep(1)
+    time.sleep(3)
 
     if checkstring is None:
         checkstring = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
@@ -44,9 +44,10 @@ def test_session_handler(user, domain, checkstring=None):
     # Now, call the first file and store the session id
     # We want to make sure we call this via the webserver instead of the cli
     # Initialize the session on the server
-    requests.get('http://www.%s/session_test_1.php' % domain)
+    s = requests.Session()
+    s.get('http://www.%s/session_test_1.php' % domain)
     # Request the second page, this should return the checkstring
-    r = requests.get('http://www.%s/session_test_2.php' % domain)
+    r = s.get('http://www.%s/session_test_2.php' % domain)
 
     if r.text == checkstring:
         return "Session handler OK."

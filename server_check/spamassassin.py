@@ -1,8 +1,9 @@
 import poplib
 from exceptions import TestException
-
+import time
 
 def test_spamassassin(user, domain, password):
+    time.sleep(3) # We need to wait a few seconds to ensure the message has been delivered
 
     # Open a pop3 connection to localhost
     conn = poplib.POP3('localhost')

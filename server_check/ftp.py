@@ -15,13 +15,9 @@ def test_ftp(user, domain, password, ssl=False):
     tries = 0
     while tries < 3:
         try:
-            ret = conn.login(user, password)
-            print conn.foobar()
-            print conn.foobabazr()
-            print "foo: %s" % ret
+            conn.login(user, password)
             break
         except Exception:
-            print "here"
             tries += 1
             time.sleep(1)
 
