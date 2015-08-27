@@ -40,13 +40,13 @@ def test_01_create_random_domain(domain):
 
 
 def test_02_validPassword():
-    assert directadmin.validPassword('Aa12bcC') is True
+    assert directadmin.validPassword('Aa12bcC')
     assert directadmin.validPassword('abc') is False
 
 
 def test_03_enable_spamassassin(domain):
     with patch('requests.post') as post:
-        assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain) is True
+        assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
 
         # again but with false credentials
         postreturn = collections.namedtuple('post', 'text, status_code')
@@ -60,7 +60,7 @@ def test_03_enable_spamassassin(domain):
 def test_04_remove_account(domain):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
     with patch('requests.post') as post, patch('__builtin__.open', mocked_open):
-        assert directadmin.remove_account("", "", domain.user) is True
+        assert directadmin.remove_account("", "", domain.user)
 
         # again but with false credentials
         postreturn = collections.namedtuple('post', 'text, status_code')

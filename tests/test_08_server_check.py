@@ -7,15 +7,6 @@ def test_00_import():
     # Empty sys.path so import is guaranteed to fail
     path = sys.path
     sys.path = ['.']
-    # Empty modules
-    # toremove = []
-    # for mod in sys.modules:
-    #     if 'server_check.' in mod or 'test_' in mod:
-    #         toremove.append(mod)
-    # for mod in toremove:
-    #     del sys.modules[mod]
-    # if 'poplib' in sys.modules:
-    #    del sys.modules['poplib']
 
     with pytest.raises(SystemExit):
         from server_check import server_check
@@ -31,7 +22,7 @@ def test_01_parse_args():
 
     args = server_check.parse_args(arguments)
     # Ensure only args.mysql is True
-    assert args.mysql is True
+    assert args.mysql
     assert args.php is False
     assert args.pop3 is False
     assert args.imap is False
@@ -44,15 +35,15 @@ def test_01_parse_args():
     arguments = []
     args = server_check.parse_args(arguments)
     # Ensure everything is True
-    assert args.mysql is True
-    assert args.php is True
-    assert args.pop3 is True
-    assert args.imap is True
-    assert args.ftp is True
-    assert args.smtp is True
-    assert args.roundcube is True
-    assert args.phpmyadmin is True
-    assert args.spamassassin is True
+    assert args.mysql
+    assert args.php
+    assert args.pop3
+    assert args.imap
+    assert args.ftp
+    assert args.smtp
+    assert args.roundcube
+    assert args.phpmyadmin
+    assert args.spamassassin
 
 
 def test_02_main():
@@ -68,7 +59,7 @@ def test_02_main():
 
         geteuid.return_value = 0
 
-        assert server_check.main([]) is True
+        assert server_check.main([])
 
         # Fake not-finding directadmin.conf
         isfile.return_value = False
@@ -77,8 +68,10 @@ def test_02_main():
         isfile.return_value = True
 
         # Check without arguments
-        with pytest.raises(SystemExit):
-            server_check.main()
+        argv = sys.argv
+        sys.argv = ['']
+        assert server_check.main()
+        sys.argv = argv
 
         # Without root
         geteuid.return_value = 1000
@@ -110,4 +103,4 @@ def test_03_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php
         geteuid.return_value = 0
         directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
 
-        assert server_check.main([]) is True
+        assert server_check.main([])

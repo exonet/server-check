@@ -24,7 +24,7 @@ def test_01_test_ftp(domain):
 
 
 def test_02_download_handler():
-    assert ftp.download_handler("this is a test") is True
+    assert ftp.download_handler("this is a test")
 
     with pytest.raises(exceptions.TestException) as err:
         ftp.download_handler("this is not a test")

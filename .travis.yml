@@ -8,7 +8,4 @@ install:
   - pip install -e .
 
 script:
-  - py.test
-
-after_script:
   - py.test --cov-report term-missing --cov=server_check --cov-fail-under=95 tests/
