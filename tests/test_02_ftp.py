@@ -1,6 +1,6 @@
 from server_check import ftp
 from server_check import exceptions
-from mock import Mock, patch
+from mock import patch
 import ftplib
 import pytest
 

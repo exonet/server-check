@@ -1,10 +1,5 @@
-import os
-from requests import Session
 import pytest
 import collections
-from server_check import directadmin
-from mock import Mock
-import pwd
 
 DomainInfo = collections.namedtuple('DomainInfo', 'domain, user, password')
 

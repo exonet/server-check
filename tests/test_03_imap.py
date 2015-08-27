@@ -1,7 +1,6 @@
 from server_check import imap
 from server_check import exceptions
-from mock import Mock, patch
-import imaplib
+from mock import patch
 import pytest
 
 
@@ -22,7 +21,7 @@ def test_00_test_imap(domain):
 
 def test_01_test_imap(domain):
 
-    with patch('imaplib.IMAP4') as mockimap, patch('imaplib.IMAP4_SSL') as mockimapssl:
+    with patch('imaplib.IMAP4') as mockimap:
         mockimap.return_value.search.return_value = ['+OK', ['1 2 3']]
         mockimap.return_value.fetch.return_value = ['+OK:', [['', 'unittest']]]
 

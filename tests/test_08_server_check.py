@@ -1,24 +1,21 @@
 import pytest
 import sys
-import os
-import getpass
-import subprocess
-from mock import Mock
+from mock import patch
 
 
 def test_00_import():
     # Empty sys.path so import is guaranteed to fail
     path = sys.path
-    sys.path = []
+    sys.path = ['.']
     # Empty modules
-    toremove = []
-    for mod in sys.modules:
-        if 'server_check.' in mod or 'test_' in mod:
-            toremove.append(mod)
-    for mod in toremove:
-        del sys.modules[mod]
-    if 'poplib' in sys.modules:
-        del sys.modules['poplib']
+    # toremove = []
+    # for mod in sys.modules:
+    #     if 'server_check.' in mod or 'test_' in mod:
+    #         toremove.append(mod)
+    # for mod in toremove:
+    #     del sys.modules[mod]
+    # if 'poplib' in sys.modules:
+    #    del sys.modules['poplib']
 
     with pytest.raises(SystemExit):
         from server_check import server_check
@@ -60,70 +57,57 @@ def test_01_parse_args():
 
 def test_02_main():
     from server_check import server_check
-    from server_check import directadmin
-    from server_check import php
-    from server_check import pop3
-    from server_check import imap
-    from server_check import smtp
-    from server_check import ftp
-    from server_check import spamassassin
-    from server_check import phpmyadmin
-    from server_check import roundcube
-    assert server_check.main([]) is True
+    with patch('__builtin__.raw_input') as rawinput, \
+            patch('getpass.getpass') as getpass, \
+            patch('subprocess.Popen'), \
+            patch('os.geteuid') as geteuid, \
+            patch('os.path.isfile') as isfile:
 
-    # Check on uid
-    mockOs = Mock(spec=os)
-    osSpec = {'geteuid.return_value': 1000}
-    mockOs.configure_mock(**osSpec)
-    with pytest.raises(SystemExit):
-        server_check.main([], os=mockOs)
+        rawinput.return_value = "foo"
+        getpass.return_value = "bar"
 
-    # Fake not-finding directadmin.conf
-    mock_os_path = Mock(spec=os.path)
-    pathSpec = {'isfile.return_value': False}
-    mock_os_path.configure_mock(**pathSpec)
-    osSpec = {'geteuid.return_value': 0}
-    mockOs.attach_mock(mock_os_path, 'path')
-    mockOs.configure_mock(**osSpec)
-    with pytest.raises(SystemExit):
-        server_check.main([], os=mockOs)
+        geteuid.return_value = 0
 
-    # Check without arguments
-    with pytest.raises(SystemExit):
-        server_check.main()
+        assert server_check.main([]) is True
 
-    # Modify raw_input, getpass, subprocess to return bogus info
-    mock_raw_input = Mock(spec=raw_input)
-    mock_getpass = Mock(spec=getpass)
-    getpassSpec = {'getpass.return_value': 'foo'}
-    mock_getpass.configure_mock(**getpassSpec)
-    mock_subprocess = Mock(spec=subprocess)
-    mock_da = Mock(spec=directadmin)
-    daSpec = {'create_random_domain.return_value': ['foo', 'bar', 'baz']}
-    mock_da.configure_mock(**daSpec)
+        # Fake not-finding directadmin.conf
+        isfile.return_value = False
+        with pytest.raises(SystemExit):
+            server_check.main([])
+        isfile.return_value = True
 
-    mockphp = Mock(spec=php)
-    mockpop3 = Mock(spec=pop3)
-    mockimap = Mock(spec=imap)
-    mocksmtp = Mock(spec=smtp)
-    mockftp = Mock(spec=ftp)
-    mockspamassassin = Mock(spec=spamassassin)
-    mockphpmyadmin = Mock(spec=phpmyadmin)
-    mockroundcube = Mock(spec=roundcube)
+        # Check without arguments
+        with pytest.raises(SystemExit):
+            server_check.main()
 
-    assert server_check.main(
-        [],
-        os=os,
-        raw_input=mock_raw_input,
-        getpass=mock_getpass,
-        subprocess=mock_subprocess,
-        directadmin=mock_da,
-        php=mockphp,
-        pop3=mockpop3,
-        imap=mockimap,
-        smtp=mocksmtp,
-        ftp=mockftp,
-        spamassassin=mockspamassassin,
-        phpmyadmin=mockphpmyadmin,
-        roundcube=mockroundcube
-        ) is True
+        # Without root
+        geteuid.return_value = 1000
+        with pytest.raises(SystemExit):
+            server_check.main([])
+
+
+@patch('server_check.server_check.directadmin')
+@patch('server_check.server_check.php')
+@patch('server_check.server_check.pop3')
+@patch('server_check.server_check.imap')
+@patch('server_check.server_check.smtp')
+@patch('server_check.server_check.ftp')
+@patch('server_check.server_check.spamassassin')
+@patch('server_check.server_check.roundcube')
+@patch('server_check.server_check.phpmyadmin')
+def test_03_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin):
+    from server_check import server_check
+    with patch('__builtin__.raw_input') as rawinput, \
+            patch('getpass.getpass') as getpass, \
+            patch('subprocess.Popen'), \
+            patch('os.geteuid') as geteuid, \
+            patch('os.path.isfile') as isfile:
+
+        isfile.return_value = True
+        rawinput.return_value = "foo"
+        getpass.return_value = "bar"
+
+        geteuid.return_value = 0
+        directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
+
+        assert server_check.main([]) is True

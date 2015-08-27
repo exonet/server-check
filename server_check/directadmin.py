@@ -16,8 +16,6 @@ def test_mysql_connection():
     with open('/usr/local/directadmin/conf/mysql.conf', 'r') as fh:
         data = fh.read()
         for line in data.strip().split("\n"):
-            print line
-            print "bla"
             # user=xxx
             # passwd=xxxx
             key, value = line.strip().split('=')

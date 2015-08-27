@@ -44,9 +44,9 @@ def test_session_handler(user, domain, checkstring=None):
     # Now, call the first file and store the session id
     # We want to make sure we call this via the webserver instead of the cli
     # Initialize the session on the server
-    session.get('http://www.%s/session_test_1.php' % domain)
+    requests.get('http://www.%s/session_test_1.php' % domain)
     # Request the second page, this should return the checkstring
-    r = session.get('http://www.%s/session_test_2.php' % domain)
+    r = requests.get('http://www.%s/session_test_2.php' % domain)
 
     if r.text == checkstring:
         return "Session handler OK."
@@ -76,7 +76,7 @@ def test_mod_ruid2(user, domain):
         pass  # We ignore raise TestExceptions because the file probably didn't exist to begin with
 
     # Access the php file so the file is created
-    r = session.get('http://www.%s/mod_ruid2_test.php' % domain)
+    r = requests.get('http://www.%s/mod_ruid2_test.php' % domain)
 
     if r.status_code != 200:
         raise TestException("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
@@ -109,7 +109,7 @@ def test_mail(user, domain):
     os.chown("/home/%s/domains/%s/public_html/mail_test.php" % (user, domain), uid, gid)
 
     # Access the php file so the mail is sent
-    r = session.get('http://www.%s/mail_test.php' % domain)
+    r = requests.get('http://www.%s/mail_test.php' % domain)
 
     if r.status_code != 200:
         raise TestException("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"

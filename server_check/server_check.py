@@ -76,7 +76,6 @@ def main(argv=None):
             domain, user, password = directadmin.create_random_domain(adminuser, adminpass)
 
             # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually
-            # pure-pw mkdb /etc/pureftpd.pdb -f /etc/proftpd.passwd
             ret = subprocess.Popen(["/usr/bin/pure-pw", "mkdb", "/etc/pureftpd.pdb", "-f", "/etc/proftpd.passwd"])
             ret.wait()
 
@@ -84,7 +83,6 @@ def main(argv=None):
             directadmin.enable_spamassassin(user, password, domain)
 
         else:
-            print "here 1"
             print error("Only DirectAdmin servers are currently supported!")
             sys.exit(-1)
 

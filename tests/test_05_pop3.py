@@ -1,47 +1,28 @@
 from server_check import pop3
 from server_check import exceptions
-from mock import Mock
-import poplib
+from mock import patch
 import pytest
 
 
 def test_00_test_pop3(domain):
-    mockPOPlib = Mock(spec=poplib)
-    mockPOP = Mock(spec=poplib.POP3('localhost'))
-    mockPOP_SSL = Mock(spec=poplib.POP3_SSL('localhost'))
+    with patch('poplib.POP3') as mockpop, patch('poplib.POP3_SSL') as mockpopssl:
+        mockpop.return_value.list.return_value = ['+OK 1 messages:', ['1 557'], 7]
+        mockpop.return_value.retr.return_value = ['+OK:', ['', 'da_server_check mail test'], 0]
 
-    # modify the conn.list and conn.retr calls
-    popSpec = {
-        'list.return_value': ['+OK 1 messages:', ['1 557'], 7],
-        'retr.return_value': ['+OK:', ['da_server_check mail test'], 0]
-    }
-    mockPOP.configure_mock(**popSpec)
-    mockPOP_SSL.configure_mock(**popSpec)
+        mockpopssl.return_value.list.return_value = ['+OK 1 messages:', ['1 557'], 7]
+        mockpopssl.return_value.retr.return_value = ['+OK:', ['', 'da_server_check mail test'], 0]
 
-    # Attach them
-    # modify POP3() method to return mockPOP
-    pop3LibSpec = {'POP3.return_value': mockPOP, 'POP3_SSL.return_value': mockPOP_SSL}
-    mockPOPlib.configure_mock(**pop3LibSpec)
-
-    assert "Test message retrieved via Dovecot POP3." in \
-        pop3.test_pop3(domain.user, domain.domain, domain.password, False, mockPOPlib)
-    assert "Test message retrieved via Dovecot POP3_SSL." in \
-        pop3.test_pop3(domain.user, domain.domain, domain.password, True, mockPOPlib)
+        assert "Test message retrieved via Dovecot POP3." in \
+            pop3.test_pop3(domain.user, domain.domain, domain.password)
+        assert "Test message retrieved via Dovecot POP3_SSL." in \
+            pop3.test_pop3(domain.user, domain.domain, domain.password, True)
 
 
 def test_01_test_pop3(domain):
-    mockPOPlib = Mock(spec=poplib)
-    mockPOP = Mock(spec=poplib.POP3('localhost'))
+    with patch('poplib.POP3') as mockpop:
+        mockpop.return_value.list.return_value = ['+OK 1 messages:', ['1 557'], 7]
+        mockpop.return_value.retr.return_value = ['+OK:', ['', 'unittest'], 0]
 
-    # modify the conn.list and conn.retr calls
-    popSpec = {
-        'list.return_value': ['+OK 1 messages:', ['1 557'], 7],
-        'retr.return_value': ['+OK:', ['unittest'], 0]
-    }
-    mockPOP.configure_mock(**popSpec)
-    pop3LibSpec = {'POP3.return_value': mockPOP}
-    mockPOPlib.configure_mock(**pop3LibSpec)
-
-    with pytest.raises(exceptions.TestException) as err:
-        pop3.test_pop3(domain.user, domain.domain, domain.password, False, mockPOPlib)
-    assert 'Retrieved message does not contain test string' in err.value.message
+        with pytest.raises(exceptions.TestException) as err:
+            pop3.test_pop3(domain.user, domain.domain, domain.password)
+        assert 'Retrieved message does not contain test string' in err.value.message

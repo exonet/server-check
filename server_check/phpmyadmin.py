@@ -8,7 +8,8 @@ def test_phpmyadmin():
     user = ""
     passwd = ""
     with open('/usr/local/directadmin/conf/mysql.conf', 'r') as fh:
-        for line in fh:
+        data = fh.read()
+        for line in data.strip().split('\n'):
             # user=xxx
             # passwd=xxxx
             key, value = line.strip().split('=')
