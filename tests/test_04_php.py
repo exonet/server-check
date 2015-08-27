@@ -20,7 +20,7 @@ def test_00_check_config(domain):
 
 def test_01_test_session_handler(domain):
 
-    with patch('requests.get') as get, patch('__builtin__.open'), patch('os.chown'):
+    with patch('requests.Session.get') as get, patch('__builtin__.open'), patch('os.chown'):
         with patch('pwd.getpwnam') as pwnam:
             pwnam.return_value = ['', '', 0, 0]
             getreturn = collections.namedtuple('getreturn', 'text')
