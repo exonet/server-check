@@ -9,12 +9,6 @@ install:
   - sudo pip install -r requirements-testing.txt
   - sudo pip install -e .
 
-before_script:
-  - sudo mkdir -p /usr/local/directadmin/conf
-  - echo 'user=root' | sudo tee /usr/local/directadmin/conf/mysql.conf
-  - echo 'passwd=' | sudo tee -a /usr/local/directadmin/conf/mysql.conf
-  - sudo touch /usr/local/directadmin/conf/directadmin.conf
-
 script:
   - sudo py.test
 
