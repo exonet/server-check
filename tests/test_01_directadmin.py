@@ -11,12 +11,12 @@ def test_00_mysql_connection():
     with patch('MySQLdb.__init__'), \
             patch('MySQLdb.connect'), \
             patch('MySQLdb.cursors.DictCursor'), \
-            patch('server_check.directadmin.open', mocked_open):
+            patch('__builtin__.open', mocked_open):
         assert 'OK' in directadmin.test_mysql_connection()
 
 
 def test_01_create_random_domain(domain):
-    with patch('requests.post') as post, patch('server_check.directadmin.open'), patch('subprocess.Popen'):
+    with patch('requests.post') as post, patch('__builtin__.open'), patch('subprocess.Popen'):
         domain, user, password = directadmin.create_random_domain("", "")
         assert domain
         assert password
@@ -59,7 +59,7 @@ def test_03_enable_spamassassin(domain):
 
 def test_04_remove_account(domain):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
-    with patch('requests.post') as post, patch('server_check.directadmin.open', mocked_open):
+    with patch('requests.post') as post, patch('__builtin__.open', mocked_open):
         assert directadmin.remove_account("", "", domain.user) is True
 
         # again but with false credentials

@@ -20,7 +20,7 @@ def test_00_check_config(domain):
 
 def test_01_test_session_handler(domain):
 
-    with patch('requests.get') as get, patch('server_check.php.open'), patch('os.chown'):
+    with patch('requests.get') as get, patch('__builtin__.open'), patch('os.chown'):
         with patch('pwd.getpwnam') as pwnam:
             pwnam.return_value = ['', '', 0, 0]
             getreturn = collections.namedtuple('getreturn', 'text')
@@ -46,7 +46,7 @@ def test_01_test_session_handler(domain):
 
 def test_02_test_mod_ruid2(domain):
 
-    with patch('requests.get') as get, patch('server_check.php.open'), patch('os.chown'), patch('os.stat') as stat:
+    with patch('requests.get') as get, patch('__builtin__.open'), patch('os.chown'), patch('os.stat') as stat:
         with patch('pwd.getpwnam') as pwnam:
             pwnam.return_value = ['', '', 0, 0]
             getreturn = collections.namedtuple('getreturn', 'text, status_code')
@@ -85,7 +85,7 @@ def test_02_test_mod_ruid2(domain):
 
 
 def test_03_test_mail(domain):
-    with patch('server_check.php.open'), patch('os.chown'), patch('requests.get') as get:
+    with patch('__builtin__.open'), patch('os.chown'), patch('requests.get') as get:
         getreturn = collections.namedtuple('getreturn', 'text, status_code')
         getreturn.text = 'OK'
         getreturn.status_code = 200

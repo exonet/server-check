@@ -7,7 +7,7 @@ from mock import patch, mock_open
 
 def test_00_test_phpmyadmin():
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
-    with patch('requests.get') as get, patch('server_check.phpmyadmin.open', mocked_open):
+    with patch('requests.get') as get, patch('__builtin__.open', mocked_open):
         getreturn = collections.namedtuple('getreturn', 'text, status_code')
         getreturn.text = 'User: foo@localhost'
         getreturn.status_code = 200
