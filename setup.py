@@ -34,10 +34,10 @@ setup(
     maintainer="Rick van den Hof",
     maintainer_email='r.vandenhof@exonet.nl',
     url='https://github.com/exonet/scripts/server_check',
-    description='Check a server to see if all components are (still) operating correctly',
+    description='Check a DirectAdmin server to see if all components are (still) operating correctly',
     long_description=README,
-    license='PRIVATE',
-    keywords='',
+    license='License :: OSI Approved :: MIT License',
+    keywords='DirectAdmin check pop3 imap ftp smtp phpmyadmin mod_ruid2 spamassasassin roundcube',
     classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
