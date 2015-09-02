@@ -14,7 +14,7 @@ def test_00_test_roundcube():
 
         assert 'Roundcube accessible' in roundcube.test_roundcube()
 
-        # Fake invalid return
+        # Fake invalid return.
         getreturn.text = 'test'
         getreturn.status_code = 500
         get.return_value = getreturn

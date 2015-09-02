@@ -4,7 +4,7 @@ from exceptions import TestException
 
 
 def test_phpmyadmin():
-    # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf
+    # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf.
     user = ""
     passwd = ""
     with open('/usr/local/directadmin/conf/mysql.conf', 'r') as fh:

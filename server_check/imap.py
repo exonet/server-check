@@ -3,24 +3,23 @@ from exceptions import TestException
 
 
 def test_imap(user, domain, password, ssl=False):
-
-    # Open an imap connection to localhost
+    # Open an imap connection to localhost.
     if not ssl:
         conn = imaplib.IMAP4('localhost')
     else:
         conn = imaplib.IMAP4_SSL('localhost')
 
-    # Login
+    # Login.
     conn.login(user, password)
 
-    # Fetch the last message (should be the only message, but hey)
-    # Select the INBOX
+    # Fetch the last message (should be the only message, but hey).
+    # Select the INBOX.
     conn.select()
 
-    # Search for messages
+    # Search for messages.
     typ, msgnums = conn.search(None, 'ALL')
 
-    # Get the last messages
+    # Get the last messages.
     msgids = msgnums[0].split()
     lastmsg = msgids[len(msgids) - 1]
     typ, data = conn.fetch(lastmsg, '(RFC822)')

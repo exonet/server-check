@@ -23,21 +23,19 @@ def get_api_url():
     return "%s://localhost:%s" % (scheme, port)
 
 def test_mysql_connection():
-    # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf
+    # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf.
     user = ""
     passwd = ""
     with open('/usr/local/directadmin/conf/mysql.conf', 'r') as fh:
         data = fh.read()
         for line in data.strip().split("\n"):
-            # user=xxx
-            # passwd=xxxx
             key, value = line.strip().split('=')
             if key == 'user':
                 user = value
             elif key == 'passwd':
                 passwd = value
 
-    # Try to create a connection
+    # Try to create a connection.
     con = None
     con = MySQLdb.connect('localhost', user, passwd, 'mysql')
     cur = con.cursor(MySQLdb.cursors.DictCursor)
@@ -57,7 +55,8 @@ def create_random_domain(adminuser, adminpass):
         password = ''.join(random.SystemRandom().choice(
             string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(6))
 
-    ip = socket.gethostbyname(socket.gethostname())  # Note, this might return 127.0.0.1
+    # Note, this might return 127.0.0.1.
+    ip = socket.gethostbyname(socket.gethostname())
 
     account = {
         'action': 'create',
@@ -103,11 +102,11 @@ def create_random_domain(adminuser, adminpass):
     elif "error=1" in r.text:
         raise TestException("Unable to create DirectAdmin user %s: %s" % (user, r.text))
 
-    # In order to make sure we're connecting to the right virtualhost, we must add the domain to /etc/hosts
+    # In order to make sure we're connecting to the right virtualhost, we must add the domain to /etc/hosts.
     with open("/etc/hosts", "a") as fh:
         fh.write("%s\t\twww.%s\n" % (ip, domain))
 
-    # Give httpd a reload to ensure the hostname is picked up
+    # Give httpd a reload to ensure the hostname is picked up.
     DEVNULL = open(os.devnull, 'wb')
     ret = subprocess.Popen(["/etc/init.d/httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
     ret.wait()
@@ -144,7 +143,7 @@ def remove_account(adminuser, adminpass, user):
     elif "error=1" in r.text:
         raise TestException("Unable to delete DirectAdmin user %s: %s" % (user, r.text))
 
-    # remove the entry from the hosts file
+    # Remove the entry from the hosts file.
     with open("/etc/hosts", "r+") as fh:
         content = fh.read()
         fh.seek(0)
@@ -156,7 +155,6 @@ def remove_account(adminuser, adminpass, user):
 
 
 def enable_spamassassin(user, passwd, domain):
-
     request = {
         'action': 'save',
         'domain': domain,

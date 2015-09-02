@@ -6,7 +6,6 @@ import collections
 
 
 def test_00_mysql_connection():
-
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
     with patch('MySQLdb.__init__'), \
             patch('MySQLdb.connect'), \
@@ -22,8 +21,8 @@ def test_01_create_random_domain(domain):
         assert password
         assert user in domain
 
-        # again but with false credentials
-        # modify the session to return login page
+        # Again but with false credentials.
+        # Modify the session to return login page.
         postreturn = collections.namedtuple('post', 'text, status_code')
         postreturn.text = "DirectAdmin Login Page"
         post.return_value = postreturn
@@ -48,7 +47,7 @@ def test_03_enable_spamassassin(domain):
     with patch('requests.post') as post, patch('__builtin__.open'):
         assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
 
-        # again but with false credentials
+        # Again but with false credentials.
         postreturn = collections.namedtuple('post', 'text, status_code')
         postreturn.text = "DirectAdmin Login Page"
         post.return_value = postreturn
@@ -62,7 +61,7 @@ def test_04_remove_account(domain):
     with patch('requests.post') as post, patch('__builtin__.open', mocked_open):
         assert directadmin.remove_account("", "", domain.user)
 
-        # again but with false credentials
+        # Again but with false credentials.
         postreturn = collections.namedtuple('post', 'text, status_code')
         postreturn.text = "DirectAdmin Login Page"
         post.return_value = postreturn
@@ -70,7 +69,7 @@ def test_04_remove_account(domain):
             directadmin.remove_account("", "", domain.user)
         assert 'DirectAdmin username or password incorrect' in err.value.message
 
-        # again but with an account we already deleted
+        # Again but with an account we already deleted.
         postreturn.text = "error=1"
         post.return_value = postreturn
         with pytest.raises(exceptions.TestException) as err:

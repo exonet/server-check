@@ -24,7 +24,6 @@ except ImportError, e:
 
 
 def parse_args(arguments=None):
-
     parser = argparse.ArgumentParser(
         description='Check a server to see if all components are still operating correctly.',
         epilog='If no options are specified, all checks will run.')
@@ -41,7 +40,7 @@ def parse_args(arguments=None):
 
     args = parser.parse_args(arguments)
 
-    # If none of the options are specified, enable them all
+    # If none of the options are specified, enable them all.
     if (not args.mysql and not args.php and not args.pop3 and not args.imap and not args.ftp and
             not args.spamassassin and not args.smtp and not args.phpmyadmin and not args.roundcube):
 
@@ -52,7 +51,6 @@ def parse_args(arguments=None):
 
 
 def main(argv=None):
-
     if os.geteuid() != 0:
         print warning("This script requires root privileges to run.")
         sys.exit(-1)
@@ -64,22 +62,22 @@ def main(argv=None):
     domain = user = password = None
 
     try:
-        # Detect DirectAdmin
+        # Detect DirectAdmin.
         if os.path.isfile("/usr/local/directadmin/conf/directadmin.conf"):
             print header("DirectAdmin")
 
-            # Ask the user for a DirectAdmin login information
+            # Ask the user for a DirectAdmin login information.
             adminuser = raw_input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
             adminpass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
             domain, user, password = directadmin.create_random_domain(adminuser, adminpass)
 
-            # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually
+            # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually.
             ret = subprocess.Popen(["/usr/bin/pure-pw", "mkdb", "/etc/pureftpd.pdb", "-f", "/etc/proftpd.passwd"])
             ret.wait()
 
-            # Enable SpamAssassin
+            # Enable SpamAssassin.
             directadmin.enable_spamassassin(user, password, domain)
 
         else:
@@ -130,7 +128,7 @@ def main(argv=None):
             print header("Roundcube")
             print ok(roundcube.test_roundcube())
 
-        # Finally, remove the account alltogether
+        # Finally, remove the account alltogether.
         directadmin.remove_account(adminuser, adminpass, user)
     except Exception as err:
         print error(err.message)

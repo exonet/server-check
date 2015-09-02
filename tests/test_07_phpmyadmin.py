@@ -15,7 +15,7 @@ def test_00_test_phpmyadmin():
 
         assert 'Logged in and authenticated' in phpmyadmin.test_phpmyadmin()
 
-        # Fake invalid return
+        # Fake invalid return.
         getreturn.text = 'test'
         getreturn.status_code = 500
         get.return_value = getreturn

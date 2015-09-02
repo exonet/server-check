@@ -4,7 +4,7 @@ from mock import patch
 
 
 def test_00_import():
-    # Empty sys.path so import is guaranteed to fail
+    # Empty sys.path so import is guaranteed to fail.
     path = sys.path
     sys.path = ['.']
 
@@ -12,7 +12,7 @@ def test_00_import():
         from server_check import server_check
         server_check.parse_args([])
 
-    # Restore PATH
+    # Restore PATH.
     sys.path = path
 
 
@@ -21,7 +21,7 @@ def test_01_parse_args():
     arguments = ['-m']
 
     args = server_check.parse_args(arguments)
-    # Ensure only args.mysql is True
+    # Ensure only args.mysql is True.
     assert args.mysql
     assert args.php is False
     assert args.pop3 is False
@@ -34,7 +34,7 @@ def test_01_parse_args():
 
     arguments = []
     args = server_check.parse_args(arguments)
-    # Ensure everything is True
+    # Ensure everything is True.
     assert args.mysql
     assert args.php
     assert args.pop3
@@ -61,19 +61,19 @@ def test_02_main():
 
         assert server_check.main([])
 
-        # Fake not-finding directadmin.conf
+        # Fake not-finding directadmin.conf.
         isfile.return_value = False
         with pytest.raises(SystemExit):
             server_check.main([])
         isfile.return_value = True
 
-        # Check without arguments
+        # Check without arguments.
         argv = sys.argv
         sys.argv = ['']
         assert server_check.main()
         sys.argv = argv
 
-        # Without root
+        # Without root.
         geteuid.return_value = 1000
         with pytest.raises(SystemExit):
             server_check.main([])

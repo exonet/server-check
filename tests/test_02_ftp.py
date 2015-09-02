@@ -14,7 +14,6 @@ def test_00_test_ftp(domain):
 
 
 def test_01_test_ftp(domain):
-
     with patch('ftplib.FTP') as mockftp:
         mockftp.return_value.login.side_effect = ftplib.error_perm
 

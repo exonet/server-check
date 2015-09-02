@@ -6,7 +6,6 @@ import collections
 
 
 def test_00_check_config(domain):
-
     with patch('subprocess.check_output') as check_output:
         check_output.return_value = 'config ok'
 
@@ -19,7 +18,6 @@ def test_00_check_config(domain):
 
 
 def test_01_test_session_handler(domain):
-
     with patch('requests.Session.get') as get, patch('__builtin__.open'), patch('os.chown'):
         with patch('pwd.getpwnam') as pwnam:
             pwnam.return_value = ['', '', 0, 0]
@@ -29,23 +27,22 @@ def test_01_test_session_handler(domain):
 
             assert "Session handler OK." in php.test_session_handler(domain.user, domain.domain,
                                                                      checkstring='test')
-            # make it return something else for the session
+            # Make it return something else for the session.
             getreturn.text = 'foobar'
             get.return_value = getreturn
 
-            # Again with modified return handler for session
+            # Again with modified return handler for session.
             with pytest.raises(exceptions.TestException) as err:
                 php.test_session_handler(domain.user, domain.domain)
             assert "Session handler not working" in err.value.message
 
-        # Again with non-existing user
+        # Again with non-existing user.
         with pytest.raises(exceptions.TestException) as err:
             php.test_session_handler("foobar", domain.domain)
         assert "User foobar does not seem to exist on this system." in err.value.message
 
 
 def test_02_test_mod_ruid2(domain):
-
     with patch('requests.get') as get, patch('__builtin__.open'), patch('os.chown'), patch('os.stat') as stat:
         with patch('pwd.getpwnam') as pwnam:
             pwnam.return_value = ['', '', 0, 0]
@@ -61,14 +58,14 @@ def test_02_test_mod_ruid2(domain):
 
             assert "mod_ruid2 enabled and working." in php.test_mod_ruid2(domain.user, domain.domain)
 
-            # Again with modified return handler for session
+            # Again with modified return handler for session.
             getreturn.status_code = 500
             get.return_value = getreturn
             with pytest.raises(exceptions.TestException) as err:
                 php.test_mod_ruid2(domain.user, domain.domain)
             assert "Unexpected response from getting" in err.value.message
 
-            # Again with modified uids/gids
+            # Again with modified uids/gids.
             getreturn.status_code = 200
             get.return_value = getreturn
             statreturn.st_uid = 666
@@ -78,7 +75,7 @@ def test_02_test_mod_ruid2(domain):
                 php.test_mod_ruid2(domain.user, domain.domain)
             assert "has incorrect ownership" in err.value.message
 
-        # Again with non-existing user
+        # Again with non-existing user.
         with pytest.raises(exceptions.TestException) as err:
             php.test_mod_ruid2("foobar", domain.domain)
         assert "User foobar does not seem to exist on this system." in err.value.message
@@ -97,19 +94,19 @@ def test_03_test_mail(domain):
             getreturn.status_code = 500
             get.return_value = getreturn
 
-            # Again with modified return handler for session
+            # Again with modified return handler for session.
             with pytest.raises(exceptions.TestException) as err:
                 php.test_mail(domain.user, domain.domain)
             assert "Unexpected response from getting" in err.value.message
 
-            # Again with proper statuscode but other text
+            # Again with proper statuscode but other text.
             getreturn.status_code = 200
             getreturn.text = 'test'
             with pytest.raises(exceptions.TestException) as err:
                 php.test_mail(domain.user, domain.domain)
             assert "mail could not be sent" in err.value.message
 
-        # Again with non-existing user
+        # Again with non-existing user.
         with pytest.raises(exceptions.TestException) as err:
             php.test_mail(domain.user, domain.domain)
         assert "User %s does not seem to exist on this system." % domain.user in err.value.message

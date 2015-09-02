@@ -3,7 +3,6 @@ from mock import patch
 
 
 def test_00_test_smtp(domain):
-
     with patch('smtplib.SMTP'), patch('smtplib.SMTP_SSL'):
         assert "Message successfully sent via SMTP on port 25." in \
             smtp.test_smtp(domain.user, domain.domain, domain.password, False, False)
