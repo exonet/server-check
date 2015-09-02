@@ -45,7 +45,7 @@ def test_02_validPassword():
 
 
 def test_03_enable_spamassassin(domain):
-    with patch('requests.post') as post:
+    with patch('requests.post') as post, patch('__builtin__.open'):
         assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
 
         # again but with false credentials
@@ -58,7 +58,7 @@ def test_03_enable_spamassassin(domain):
 
 
 def test_04_remove_account(domain):
-    mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
+    mocked_open = mock_open(read_data='user=foo\npasswd=bar\nSSL=1\nport=1234\n')
     with patch('requests.post') as post, patch('__builtin__.open', mocked_open):
         assert directadmin.remove_account("", "", domain.user)
 

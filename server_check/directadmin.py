@@ -8,6 +8,19 @@ import re
 import subprocess
 from exceptions import TestException
 
+def get_api_url():
+    scheme = "http"
+    port = 2222
+    with open('/usr/local/directadmin/conf/directadmin.conf', 'r') as fh:
+        data = fh.read()
+        for line in data.strip().split("\n"):
+            key, value = line.strip().split('=')
+            if key == 'SSL' and value == '1':
+                scheme = 'https'
+            if key == 'port':
+                port = value
+
+    return "%s://localhost:%s" % (scheme, port)
 
 def test_mysql_connection():
     # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf
@@ -80,7 +93,7 @@ def create_random_domain(adminuser, adminpass):
     }
 
     r = requests.post(
-        'http://localhost:2222/CMD_API_ACCOUNT_USER',
+        '%s/CMD_API_ACCOUNT_USER' % get_api_url(),
         data=account,
         auth=(adminuser, adminpass)
     )
@@ -121,7 +134,7 @@ def remove_account(adminuser, adminpass, user):
     }
 
     r = requests.post(
-        'http://localhost:2222/CMD_API_SELECT_USERS',
+        '%s/CMD_API_SELECT_USERS' % get_api_url(),
         data=account,
         auth=(adminuser, adminpass)
     )
@@ -158,7 +171,7 @@ def enable_spamassassin(user, passwd, domain):
     }
 
     r = requests.post(
-        'http://localhost:2222/CMD_API_SPAMASSASSIN',
+        '%s/CMD_API_SPAMASSASSIN' % get_api_url(),
         data=request,
         auth=(user, passwd)
     )
