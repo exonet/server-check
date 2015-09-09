@@ -1,4 +1,3 @@
-# apt-get install python-requests
 import requests
 from exceptions import TestException
 

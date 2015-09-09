@@ -1,4 +1,3 @@
-# import pytest
 from server_check import bcolors
 
 
