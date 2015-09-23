@@ -94,7 +94,8 @@ def create_random_domain(adminuser, adminpass):
     r = requests.post(
         '%s/CMD_API_ACCOUNT_USER' % get_api_url(),
         data=account,
-        auth=(adminuser, adminpass)
+        auth=(adminuser, adminpass),
+        verify=False
     )
 
     if "DirectAdmin Login Page" in r.text:
@@ -135,7 +136,8 @@ def remove_account(adminuser, adminpass, user):
     r = requests.post(
         '%s/CMD_API_SELECT_USERS' % get_api_url(),
         data=account,
-        auth=(adminuser, adminpass)
+        auth=(adminuser, adminpass),
+        verify=False
     )
 
     if "DirectAdmin Login Page" in r.text:
@@ -171,7 +173,8 @@ def enable_spamassassin(user, passwd, domain):
     r = requests.post(
         '%s/CMD_API_SPAMASSASSIN' % get_api_url(),
         data=request,
-        auth=(user, passwd)
+        auth=(user, passwd),
+        verify=False
     )
 
     if "DirectAdmin Login Page" in r.text:
