@@ -1,0 +1,11 @@
+language: python
+
+python:
+  - "2.7"
+
+install:
+  - pip install -r requirements-testing.txt
+  - pip install -e .
+
+script:
+  - py.test --cov-report term-missing --cov=server_check --cov-fail-under=95 tests/
