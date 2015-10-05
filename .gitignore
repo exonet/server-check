@@ -1,5 +1,6 @@
 *.pyc
 .tox
+build
 .cache
 .eggs
 *.egg-info/*

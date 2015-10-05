@@ -46,39 +46,40 @@ def test_01_parse_args():
     assert args.spamassassin
 
 
+@patch('subprocess.Popen')
 def test_02_main():
     from server_check import server_check
-    with patch('__builtin__.raw_input') as rawinput, \
-            patch('getpass.getpass') as getpass, \
-            patch('subprocess.Popen'), \
-            patch('os.geteuid') as geteuid, \
-            patch('os.path.isfile') as isfile:
+    with patch('__builtin__.raw_input') as rawinput:
+        with patch('getpass.getpass') as getpass:
+            with patch('os.geteuid') as geteuid:
+                with patch('os.path.isfile') as isfile:
 
-        rawinput.return_value = "foo"
-        getpass.return_value = "bar"
+                    rawinput.return_value = "foo"
+                    getpass.return_value = "bar"
 
-        geteuid.return_value = 0
+                    geteuid.return_value = 0
 
-        assert server_check.main([])
+                    assert server_check.main([])
 
-        # Fake not-finding directadmin.conf.
-        isfile.return_value = False
-        with pytest.raises(SystemExit):
-            server_check.main([])
-        isfile.return_value = True
+                    # Fake not-finding directadmin.conf.
+                    isfile.return_value = False
+                    with pytest.raises(SystemExit):
+                        server_check.main([])
+                    isfile.return_value = True
 
-        # Check without arguments.
-        argv = sys.argv
-        sys.argv = ['']
-        assert server_check.main()
-        sys.argv = argv
+                    # Check without arguments.
+                    argv = sys.argv
+                    sys.argv = ['']
+                    assert server_check.main()
+                    sys.argv = argv
 
-        # Without root.
-        geteuid.return_value = 1000
-        with pytest.raises(SystemExit):
-            server_check.main([])
+                    # Without root.
+                    geteuid.return_value = 1000
+                    with pytest.raises(SystemExit):
+                        server_check.main([])
 
 
+@patch('subprocess.Popen')
 @patch('server_check.server_check.directadmin')
 @patch('server_check.server_check.php')
 @patch('server_check.server_check.pop3')
@@ -90,17 +91,16 @@ def test_02_main():
 @patch('server_check.server_check.phpmyadmin')
 def test_03_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin):
     from server_check import server_check
-    with patch('__builtin__.raw_input') as rawinput, \
-            patch('getpass.getpass') as getpass, \
-            patch('subprocess.Popen'), \
-            patch('os.geteuid') as geteuid, \
-            patch('os.path.isfile') as isfile:
+    with patch('__builtin__.raw_input') as rawinput:
+        with patch('getpass.getpass') as getpass:
+            with patch('os.geteuid') as geteuid:
+                with patch('os.path.isfile') as isfile:
 
-        isfile.return_value = True
-        rawinput.return_value = "foo"
-        getpass.return_value = "bar"
+                    isfile.return_value = True
+                    rawinput.return_value = "foo"
+                    getpass.return_value = "bar"
 
-        geteuid.return_value = 0
-        directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
+                    geteuid.return_value = 0
+                    directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
 
-        assert server_check.main([])
+                    assert server_check.main([])
