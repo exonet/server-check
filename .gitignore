@@ -1,6 +1,8 @@
 *.pyc
+.tox
+.cache
+.eggs
 *.egg-info/*
-.eggs/*
 .coverage
 ftp_test.txt
 dist/
