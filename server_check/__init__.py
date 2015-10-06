@@ -67,8 +67,9 @@ def main(argv=None):
             domain, user, password = directadmin.create_random_domain(adminuser, adminpass)
 
             # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually.
-            ret = subprocess.Popen(["/usr/bin/pure-pw", "mkdb", "/etc/pureftpd.pdb", "-f", "/etc/proftpd.passwd"])
-            ret.wait()
+            if os.path.isfile("/usr/bin/pure-pw"):
+                ret = subprocess.Popen(["/usr/bin/pure-pw", "mkdb", "/etc/pureftpd.pdb", "-f", "/etc/proftpd.passwd"])
+                ret.wait()
 
             # Enable SpamAssassin.
             directadmin.enable_spamassassin(user, password, domain)
@@ -124,6 +125,6 @@ def main(argv=None):
         # Finally, remove the account alltogether.
         directadmin.remove_account(adminuser, adminpass, user)
     except Exception as err:
-        print error(err.message)
+        print error(err)
 
     return True
