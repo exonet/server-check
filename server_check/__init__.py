@@ -103,6 +103,8 @@ def main(argv=None):
             print header("SMTP")
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False))
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=True))
+            print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False,
+                                    starttls=True))
             if '465' in open('/etc/exim.conf').read():
                 print ok(smtp.test_smtp(user, domain, password, ssl=True, submission=False))
 
