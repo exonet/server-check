@@ -26,4 +26,6 @@ def test_smtp(user, domain, password, ssl=False, submission=False, starttls=Fals
 
     # Disconnect.
     conn.quit()
-    return "Message successfully sent via SMTP%s on port %s." % ("_SSL" if ssl else "", port)
+    return "Message successfully sent via SMTP%s%s on port %s." % ("_SSL" if ssl else "",
+                                                                   " with STARTTLS" if starttls else "",
+                                                                   port)
