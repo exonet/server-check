@@ -103,12 +103,14 @@ def main(argv=None):
             print header("SMTP")
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False))
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=True))
-            print ok(smtp.test_smtp(user, domain, password, ssl=True, submission=False))
+            if '465' in open('/etc/exim.conf').read():
+                print ok(smtp.test_smtp(user, domain, password, ssl=True, submission=False))
 
         if args.ftp:
             print header("FTP")
             print ok(ftp.test_ftp(user, domain, password))
-            print ok(ftp.test_ftp(user, domain, password, ssl=True))
+            if sys.version_info[0] > 2 or (sys.version_info[0] == 2 and sys.version_info[1] > 6):
+                print ok(ftp.test_ftp(user, domain, password, ssl=True))
 
         if args.spamassassin:
             print header("SpamAssassin")
