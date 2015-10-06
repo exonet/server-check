@@ -3,21 +3,8 @@ import sys
 from mock import patch
 
 
-def test_00_import():
-    # Empty sys.path so import is guaranteed to fail.
-    path = sys.path
-    sys.path = ['.']
-
-    with pytest.raises(SystemExit):
-        from server_check import server_check
-        server_check.parse_args([])
-
-    # Restore PATH.
-    sys.path = path
-
-
-def test_01_parse_args():
-    from server_check import server_check
+def test_00_parse_args():
+    import server_check
     arguments = ['-m']
 
     args = server_check.parse_args(arguments)
@@ -47,8 +34,8 @@ def test_01_parse_args():
 
 
 @patch('subprocess.Popen')
-def test_02_main():
-    from server_check import server_check
+def test_01_main(mockpopen):
+    import server_check
     with patch('__builtin__.raw_input') as rawinput:
         with patch('getpass.getpass') as getpass:
             with patch('os.geteuid') as geteuid:
@@ -80,17 +67,18 @@ def test_02_main():
 
 
 @patch('subprocess.Popen')
-@patch('server_check.server_check.directadmin')
-@patch('server_check.server_check.php')
-@patch('server_check.server_check.pop3')
-@patch('server_check.server_check.imap')
-@patch('server_check.server_check.smtp')
-@patch('server_check.server_check.ftp')
-@patch('server_check.server_check.spamassassin')
-@patch('server_check.server_check.roundcube')
-@patch('server_check.server_check.phpmyadmin')
-def test_03_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin):
-    from server_check import server_check
+@patch('server_check.directadmin')
+@patch('server_check.php')
+@patch('server_check.pop3')
+@patch('server_check.imap')
+@patch('server_check.smtp')
+@patch('server_check.ftp')
+@patch('server_check.spamassassin')
+@patch('server_check.roundcube')
+@patch('server_check.phpmyadmin')
+def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin,
+                 mockpopen):
+    import server_check
     with patch('__builtin__.raw_input') as rawinput:
         with patch('getpass.getpass') as getpass:
             with patch('os.geteuid') as geteuid:

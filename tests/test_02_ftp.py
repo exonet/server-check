@@ -5,6 +5,7 @@ import sys
 import ftplib
 import pytest
 
+
 def test_00_test_ftp(domain):
     with patch('ftplib.FTP'):
         assert "Able to log in, upload, download and remove testfile via FTP." in \

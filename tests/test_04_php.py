@@ -16,6 +16,7 @@ def test_00_check_config(domain):
             php.check_config()
         assert "Error or warning in output" in err.value.message
 
+
 @patch('__builtin__.open')
 @patch('os.chown')
 def test_01_test_session_handler(mockopen, mockchown, domain):
@@ -41,6 +42,7 @@ def test_01_test_session_handler(mockopen, mockchown, domain):
         with pytest.raises(exceptions.TestException) as err:
             php.test_session_handler("foobar", domain.domain)
         assert "User foobar does not seem to exist on this system." in err.value.message
+
 
 @patch('__builtin__.open')
 @patch('os.chown')

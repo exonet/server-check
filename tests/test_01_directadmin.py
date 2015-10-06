@@ -4,6 +4,7 @@ from server_check import directadmin
 from mock import patch, mock_open
 import collections
 
+
 @patch('MySQLdb.__init__')
 @patch('MySQLdb.connect')
 @patch('MySQLdb.cursors.DictCursor')
@@ -11,6 +12,7 @@ def test_00_mysql_connection(mockinit, mockconnect, mockdict):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
     with patch('__builtin__.open', mocked_open):
         assert 'OK' in directadmin.test_mysql_connection()
+
 
 @patch('__builtin__.open')
 @patch('subprocess.Popen')

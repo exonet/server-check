@@ -8,6 +8,7 @@ import re
 import subprocess
 from exceptions import TestException
 
+
 def get_api_url():
     scheme = "http"
     port = 2222
@@ -21,6 +22,7 @@ def get_api_url():
                 port = value
 
     return "%s://localhost:%s" % (scheme, port)
+
 
 def test_mysql_connection():
     # Read MySQL username and password from /usr/local/directadmin/conf/mysql.conf.

@@ -1,18 +1,19 @@
 import sys
 import os
 import argparse
-import directadmin
-import php
-import pop3
-import imap
-import smtp
-import ftp
-import spamassassin
-import phpmyadmin
-import roundcube
 import subprocess
+import getpass
+from server_check import directadmin
+from server_check import php
+from server_check import pop3
+from server_check import imap
+from server_check import smtp
+from server_check import ftp
+from server_check import spamassassin
+from server_check import phpmyadmin
+from server_check import roundcube
 
-from bcolors import header, ok, warning, error
+from bcolors import bcolors, header, ok, warning, error
 
 
 def parse_args(arguments=None):
