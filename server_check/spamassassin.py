@@ -25,4 +25,6 @@ def test_spamassassin(user, domain, password):
                 if 'X-Spam-Status' in line:
                     return "Test message contains SpamAssassin headers (message %s)." % msgid
 
+        time.sleep(1)
+
     raise TestException("Retrieved message does not contain SpamAssassin headers:\n%s" % '\n'.join(message))
