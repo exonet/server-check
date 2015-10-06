@@ -28,7 +28,7 @@ def test_pop3(user, domain, password, ssl=False):
                 return "Test message retrieved via Dovecot POP3%s." % ("_SSL" if ssl else "")
 
         attempt += 1
-        conn.close()
+        conn.quit()
         time.sleep(1)
 
     raise TestException("Retrieved message does not contain test string:\n%s" % '\n'.join(message))
