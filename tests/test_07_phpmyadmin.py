@@ -10,7 +10,7 @@ def test_00_test_phpmyadmin():
     with patch('requests.get') as get:
         with patch('__builtin__.open', mocked_open):
             getreturn = collections.namedtuple('getreturn', 'text, status_code')
-            getreturn.text = 'User: foo@localhost'
+            getreturn.text = 'phpMyAdmin'
             getreturn.status_code = 200
             get.return_value = getreturn
 

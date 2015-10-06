@@ -8,7 +8,7 @@ from mock import patch
 def test_00_test_roundcube():
     with patch('requests.get') as get:
         getreturn = collections.namedtuple('getreturn', 'text, status_code')
-        getreturn.text = 'Roundcube Webmail Login'
+        getreturn.text = 'Roundcube Webmail'
         getreturn.status_code = 200
         get.return_value = getreturn
 
