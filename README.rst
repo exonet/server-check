@@ -1,9 +1,10 @@
-.. image:: https://www.travis-ci.org/exonet/server-check.svg?branch=master
-  :target: https://www.travis-ci.org/exonet/server-check
-  :alt: Build Status
+.. image:: https://travis-ci.org/exonet/server-check.svg
+  :target: https://travis-ci.org/exonet/server-check
+     :alt: Build Status
 
 .. image:: https://coveralls.io/repos/exonet/server-check/badge.svg?branch=master&service=github
   :target: https://coveralls.io/github/exonet/server-check?branch=master
+
 
 server\_check
 -------------
