@@ -60,11 +60,11 @@ def main(argv=None):
             print header("DirectAdmin")
 
             # Ask the user for a DirectAdmin login information.
-            adminuser = raw_input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
-            adminpass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
+            admin_user = raw_input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
+            admin_pass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
-            domain, user, password = directadmin.create_random_domain(adminuser, adminpass)
+            domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
 
             # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually.
             if os.path.isfile("/usr/bin/pure-pw"):
@@ -104,7 +104,7 @@ def main(argv=None):
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False))
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=True))
             print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False,
-                                    starttls=True))
+                                    start_tls=True))
             if '465' in open('/etc/exim.conf').read():
                 print ok(smtp.test_smtp(user, domain, password, ssl=True, submission=False))
 
@@ -127,7 +127,7 @@ def main(argv=None):
             print ok(roundcube.test_roundcube())
 
         # Finally, remove the account alltogether.
-        directadmin.remove_account(adminuser, adminpass, user)
+        directadmin.remove_account(admin_user, admin_pass, user)
     except Exception as err:
         print error(err)
 

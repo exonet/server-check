@@ -1,7 +1,7 @@
 import smtplib
 
 
-def test_smtp(user, domain, password, ssl=False, submission=False, starttls=False):
+def test_smtp(user, domain, password, ssl=False, submission=False, start_tls=False):
     # See if we can connect to exim and send a message.
     port = 25 if not submission else 587
     if ssl:
@@ -12,7 +12,7 @@ def test_smtp(user, domain, password, ssl=False, submission=False, starttls=Fals
         conn = smtplib.SMTP_SSL('localhost')
 
     conn.ehlo()
-    if starttls:
+    if start_tls:
         conn.starttls()
         conn.ehlo()
 
@@ -27,5 +27,5 @@ def test_smtp(user, domain, password, ssl=False, submission=False, starttls=Fals
     # Disconnect.
     conn.quit()
     return "Message successfully sent via SMTP%s%s on port %s." % ("_SSL" if ssl else "",
-                                                                   " with STARTTLS" if starttls else "",
+                                                                   " with STARTTLS" if start_tls else "",
                                                                    port)

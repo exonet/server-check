@@ -48,7 +48,7 @@ def test_mysql_connection():
         return "MySQL connection OK: %s users." % (row['usercount'])
 
 
-def create_random_domain(adminuser, adminpass):
+def create_random_domain(admin_user, admin_pass):
     user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
     domain = user + ".nl"
 
@@ -96,7 +96,7 @@ def create_random_domain(adminuser, adminpass):
     r = requests.post(
         '%s/CMD_API_ACCOUNT_USER' % get_api_url(),
         data=account,
-        auth=(adminuser, adminpass),
+        auth=(admin_user, admin_pass),
         verify=False
     )
 
@@ -128,7 +128,7 @@ def validPassword(password):
     return False
 
 
-def remove_account(adminuser, adminpass, user):
+def remove_account(admin_user, admin_pass, user):
     account = {
         'delete': 'yes',
         'confirmed': 'Confirm',
@@ -138,7 +138,7 @@ def remove_account(adminuser, adminpass, user):
     r = requests.post(
         '%s/CMD_API_SELECT_USERS' % get_api_url(),
         data=account,
-        auth=(adminuser, adminpass),
+        auth=(admin_user, admin_pass),
         verify=False
     )
 

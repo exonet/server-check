@@ -8,7 +8,7 @@ import collections
 @patch('MySQLdb.__init__')
 @patch('MySQLdb.connect')
 @patch('MySQLdb.cursors.DictCursor')
-def test_00_mysql_connection(mockinit, mockconnect, mockdict):
+def test_00_mysql_connection(mock_init, mock_connect, mock_dict):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
     with patch('__builtin__.open', mocked_open):
         assert 'OK' in directadmin.test_mysql_connection()
@@ -16,7 +16,7 @@ def test_00_mysql_connection(mockinit, mockconnect, mockdict):
 
 @patch('__builtin__.open')
 @patch('subprocess.Popen')
-def test_01_create_random_domain(mockopen, mockpopen, domain):
+def test_01_create_random_domain(mock_open, mock_popen, domain):
     with patch('requests.post') as post:
         domain, user, password = directadmin.create_random_domain("", "")
         assert domain
@@ -46,7 +46,7 @@ def test_02_validPassword():
 
 
 @patch('__builtin__.open')
-def test_03_enable_spamassassin(mockopen, domain):
+def test_03_enable_spamassassin(mock_open, domain):
     with patch('requests.post') as post:
         assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
 

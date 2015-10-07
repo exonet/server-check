@@ -36,22 +36,23 @@ def test_00_parse_args():
 @patch('subprocess.Popen')
 def test_01_main(mockpopen):
     import server_check
-    with patch('__builtin__.raw_input') as rawinput:
-        with patch('getpass.getpass') as getpass:
-            with patch('os.geteuid') as geteuid:
-                with patch('os.path.isfile') as isfile:
+    with patch('__builtin__.raw_input') as mock_raw_input:
+        with patch('getpass.getpass') as mock_getpass:
+            with patch('os.geteuid') as mock_geteuid:
+                with patch('os.path.isfile') as mock_isfile:
 
-                    rawinput.return_value = "foo"
-                    getpass.return_value = "bar"
-                    geteuid.return_value = 0
+                    mock_isfile.return_value = True
+                    mock_raw_input.return_value = "foo"
+                    mock_getpass.return_value = "bar"
+                    mock_geteuid.return_value = 0
 
                     assert server_check.main([])
 
                     # Fake not-finding directadmin.conf.
-                    isfile.return_value = False
+                    mock_isfile.return_value = False
                     with pytest.raises(SystemExit):
                         server_check.main([])
-                    isfile.return_value = True
+                    mock_isfile.return_value = True
 
                     # Check without arguments.
                     argv = sys.argv
@@ -60,7 +61,7 @@ def test_01_main(mockpopen):
                     sys.argv = argv
 
                     # Without root.
-                    geteuid.return_value = 1000
+                    mock_geteuid.return_value = 1000
                     with pytest.raises(SystemExit):
                         server_check.main([])
 
@@ -78,16 +79,16 @@ def test_01_main(mockpopen):
 def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin,
                  mockpopen):
     import server_check
-    with patch('__builtin__.raw_input') as rawinput:
-        with patch('getpass.getpass') as getpass:
-            with patch('os.geteuid') as geteuid:
-                with patch('os.path.isfile') as isfile:
+    with patch('__builtin__.raw_input') as mock_raw_input:
+        with patch('getpass.getpass') as mock_getpass:
+            with patch('os.geteuid') as mock_geteuid:
+                with patch('os.path.isfile') as mock_isfile:
 
-                    isfile.return_value = True
-                    rawinput.return_value = "foo"
-                    getpass.return_value = "bar"
+                    mock_isfile.return_value = True
+                    mock_raw_input.return_value = "foo"
+                    mock_getpass.return_value = "bar"
 
-                    geteuid.return_value = 0
+                    mock_geteuid.return_value = 0
                     directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
 
                     mocked_open = mock_open(read_data='465\n')
