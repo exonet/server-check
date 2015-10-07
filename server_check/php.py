@@ -9,7 +9,8 @@ from exceptions import TestException
 
 
 def check_config():
-    output = subprocess.check_output(["php", "-v"], stderr=subprocess.STDOUT)
+    proc = subprocess.Popen(["php", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = proc.communicate()[0]
 
     if 'error' in output.lower() or 'warning' in output.lower():
         raise TestException("Error or warning in output:\n%s" % output)

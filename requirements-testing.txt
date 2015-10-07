@@ -1,5 +1,0 @@
-mock
-pytest
-pytest-cov
-requests
-MySQL-python

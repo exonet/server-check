@@ -1,5 +1,13 @@
+.. image:: https://travis-ci.org/exonet/server-check.svg
+  :target: https://travis-ci.org/exonet/server-check
+     :alt: Build Status
+
+.. image:: https://coveralls.io/repos/exonet/server-check/badge.svg?branch=master&service=github
+  :target: https://coveralls.io/github/exonet/server-check?branch=master
+
+
 server\_check
-=============
+-------------
 
 The goal of this tool is to check a server to see if all components are still operating correctly.
 It will check the following:

@@ -1,55 +1,33 @@
 #!/usr/bin/env python
-version = "1.0"
-
-import codecs
-import os
-import sys
-import pip
-
-from pip.req import parse_requirements
+import os.path
 from setuptools import setup, find_packages
-from os.path import abspath, dirname, join
 
-here = abspath(dirname(__file__))
-
-# determine the python version
-IS_PYPY = hasattr(sys, 'pypy_version_info')
-
-with codecs.open(join(here, 'README.md'), encoding='utf-8') as f:
-    README = f.read()
-
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    print("You probably want to also tag the version now:")
-    print("  git tag -a %s -m 'version %s'" % (version, version))
-    print("  git push --tags")
-    sys.exit()
-
-install_reqs = parse_requirements('requirements.txt', session=pip.download.PipSession())
-reqs = [str(ir.req) for ir in install_reqs]
+here = os.path.dirname(__file__)
+readme = open(os.path.join(here, 'README.rst')).read()
 
 setup(
     name='server_check',
-    version=version,
+    use_scm_version=True,
     maintainer="Rick van den Hof",
     maintainer_email='r.vandenhof@exonet.nl',
-    url='https://github.com/exonet/scripts/server_check',
+    url='https://github.com/exonet/scripts/server-check',
     description='Check a DirectAdmin server to see if all components are (still) operating correctly',
-    long_description=README,
-    license='License :: OSI Approved :: MIT License',
+    long_description=readme,
+    license='MIT',
     keywords='DirectAdmin check pop3 imap ftp smtp phpmyadmin mod_ruid2 spamassasassin roundcube',
     classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Topic :: Utilities',
         'Environment :: Console',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
         'Operating System :: OS Independent',
         'Development Status :: 4 - Beta'
     ],
-    setup_requires=reqs,
-    install_requires=reqs,
+    setup_requires=['setuptools_scm'],
+    install_requires=['MySQL-python', 'requests', 'argparse'],
     packages=find_packages(exclude=['tests', 'tests.*']),
     test_suite='nose.collector',
-    entry_points={'console_scripts': ['server_check = server_check.server_check:main']},
+    entry_points={'console_scripts': ['server_check = server_check:main']},
 )
