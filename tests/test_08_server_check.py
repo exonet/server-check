@@ -1,6 +1,6 @@
 import pytest
 import sys
-from mock import patch
+from mock import patch, mock_open
 
 
 def test_00_parse_args():
@@ -43,7 +43,6 @@ def test_01_main(mockpopen):
 
                     rawinput.return_value = "foo"
                     getpass.return_value = "bar"
-
                     geteuid.return_value = 0
 
                     assert server_check.main([])
@@ -91,4 +90,6 @@ def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php
                     geteuid.return_value = 0
                     directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
 
-                    assert server_check.main([])
+                    mocked_open = mock_open(read_data='465\n')
+                    with patch('__builtin__.open', mocked_open):
+                        assert server_check.main([])

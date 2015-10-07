@@ -11,3 +11,5 @@ def test_00_test_smtp(mockSMTP, domain):
         smtp.test_smtp(domain.user, domain.domain, domain.password, False, True)
     assert "Message successfully sent via SMTP_SSL on port 465." in \
         smtp.test_smtp(domain.user, domain.domain, domain.password, True, False)
+    assert "Message successfully sent via SMTP with STARTTLS on port 25." in \
+        smtp.test_smtp(domain.user, domain.domain, domain.password, False, False, True)
