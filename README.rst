@@ -42,3 +42,7 @@ To install the latest version::
 To install on Debian 6/7 based DirectAdmin servers::
 
  apt-get install python-dev && PATH=$PATH:/usr/local/mysql/bin pip install server_check
+
+Screenshot
+----------
+.. image:: https://www.exonet.nl/img/pictures/articles/52/server_check.gif
