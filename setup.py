@@ -10,7 +10,7 @@ setup(
     use_scm_version=True,
     maintainer="Rick van den Hof",
     maintainer_email='r.vandenhof@exonet.nl',
-    url='https://github.com/exonet/scripts/server-check',
+    url='https://github.com/exonet/server-check',
     description='Check a DirectAdmin server to see if all components are (still) operating correctly',
     long_description=readme,
     license='MIT',
