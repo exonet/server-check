@@ -32,8 +32,8 @@ The tool requires the Python header files and MySQL-python.
 Installation
 ------------
 To install this tool on a DirectAdmin server, make sure you have installed the Python development
-package for your distribution. On Debian based distributions this should be 'python-dev'.
-If MySQL-python isn't installed yet, make sure the mysql_config tool is in your $PATH.
+package and the Python package manager (pip) for your distribution. If MySQL-python isn't installed
+yet, make sure the mysql_config tool is in your $PATH.
 
 To install the latest version::
 
@@ -41,7 +41,7 @@ To install the latest version::
 
 To install on Debian 6/7 based DirectAdmin servers::
 
- apt-get install python-dev && PATH=$PATH:/usr/local/mysql/bin pip install server_check
+ apt-get install python-dev python-pip && PATH=$PATH:/usr/local/mysql/bin pip install server_check
 
 Screenshot
 ----------
