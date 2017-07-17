@@ -64,7 +64,10 @@ def main(argv=None):
             admin_pass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
-            domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
+            try:
+                domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
+            except:
+                print(error('Failed to create user: {0}'.format(user)))
 
             # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually.
             if os.path.isfile("/usr/bin/pure-pw"):
