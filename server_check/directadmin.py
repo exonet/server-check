@@ -110,11 +110,8 @@ def create_random_domain(admin_user, admin_pass):
         fh.write("%s\t\twww.%s\n" % (ip, domain))
 
     # Give httpd a reload to ensure the hostname is picked up.
-    DEVNULL = open(os.devnull, 'wb')
-    ret = subprocess.Popen(["/etc/init.d/httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
-    ret.wait()
-    DEVNULL.close()
-
+    reload_webservices()
+    
     return domain, user, password
 
 
@@ -183,3 +180,28 @@ def enable_spamassassin(user, passwd, domain):
         raise TestException("DirectAdmin username or password incorrect")
 
     return True
+
+
+def reload_webservices():
+    '''
+    Reload Apache and optionally Nginx
+    '''
+    DEVNULL = open(os.devnull, 'wb')
+    
+    # Reload Apache
+    if os.path.isfile('/usr/sbin/httpd'):
+        try:
+            ret = subprocess.Popen(["/usr/sbin/httpd", "-k", "graceful"], stdout=DEVNULL, stderr=DEVNULL)
+            ret.wait()
+        except Exception as ex:
+            raise StandardError('Unable to reload Apache: {0}'.format(ex))
+
+    # Reload Nginx
+    if os.path.isfile('/usr/sbin/nginx'):
+        try:
+            ret = subprocess.Popen(["/usr/sbin/nginx", "-s", "reload"], stdout=DEVNULL, stderr=DEVNULL)
+            ret.wait()
+        except Exception as ex:
+            raise StandardError('Unable to reload Nginx: {0}'.format(ex))
+    
+    DEVNULL.close()
