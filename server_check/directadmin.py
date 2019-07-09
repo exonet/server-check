@@ -38,14 +38,11 @@ def test_mysql_connection():
                 passwd = value
 
     # Try to create a connection.
-    con = None
-    con = mysql.connector.connect('localhost', user, passwd, 'mysql')
-    cur = con.cursor(mysql.connector.cursors.DictCursor)
+    con = mysql.connector.connect(host='localhost', user=user, password=passwd, database='mysql')
+    cur = con.cursor()
     cur.execute("SELECT COUNT(User) AS usercount FROM user")
-    if cur.rowcount:
-        row = cur.fetchone()
-        con.close()
-        return "MySQL connection OK: %s users." % (row['usercount'])
+    for record in cur:
+        return "MySQL connection OK: {} users.".format(record[0])
 
 
 def create_random_domain(admin_user, admin_pass):
@@ -54,8 +51,7 @@ def create_random_domain(admin_user, admin_pass):
 
     password = ""
     while not validPassword(password):
-        password = ''.join(random.SystemRandom().choice(
-            string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(17))
+        password = '!' + ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(17))
 
     # Note, this might return 127.0.0.1.
     ip = socket.gethostbyname(socket.gethostname())
