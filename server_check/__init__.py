@@ -12,7 +12,7 @@ from server_check import ftp
 from server_check import spamassassin
 from server_check import phpmyadmin
 from server_check import roundcube
-from server_check.bcolors import warning, ok, header, error
+from server_check.bcolors import bcolors, warning, ok, header, error
 
 
 def parse_args(arguments=None):
