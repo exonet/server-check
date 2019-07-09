@@ -49,13 +49,13 @@ def test_mysql_connection():
 
 
 def create_random_domain(admin_user, admin_pass):
-    user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
+    user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(17))
     domain = user + ".nl"
 
     password = ""
     while not validPassword(password):
         password = ''.join(random.SystemRandom().choice(
-            string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(6))
+            string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(17))
 
     # Note, this might return 127.0.0.1.
     ip = socket.gethostbyname(socket.gethostname())
