@@ -1,5 +1,5 @@
 import poplib
-from exceptions import TestException
+from .exceptions import TestException
 import time
 
 

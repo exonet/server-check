@@ -1,6 +1,6 @@
 import ftplib
 import time
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def test_ftp(user, domain, password, ssl=False):

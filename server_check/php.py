@@ -5,7 +5,7 @@ import string
 import pwd
 import os
 import time
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def check_config():

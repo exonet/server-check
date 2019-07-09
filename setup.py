@@ -26,7 +26,7 @@ setup(
         'Development Status :: 4 - Beta'
     ],
     setup_requires=['setuptools_scm'],
-    install_requires=['MySQL-python', 'requests', 'argparse'],
+    install_requires=['mysql-connector', 'requests', 'argparse'],
     packages=find_packages(exclude=['tests', 'tests.*']),
     test_suite='nose.collector',
     entry_points={'console_scripts': ['server_check = server_check:main']},

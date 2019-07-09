@@ -12,8 +12,7 @@ from server_check import ftp
 from server_check import spamassassin
 from server_check import phpmyadmin
 from server_check import roundcube
-
-from bcolors import bcolors, header, ok, warning, error
+from server_check.bcolors import warning, ok, header, error
 
 
 def parse_args(arguments=None):
@@ -45,7 +44,7 @@ def parse_args(arguments=None):
 
 def main(argv=None):
     if os.geteuid() != 0:
-        print warning("This script requires root privileges to run.")
+        print(warning("This script requires root privileges to run."))
         sys.exit(-1)
 
     if argv is None:
@@ -57,10 +56,10 @@ def main(argv=None):
     try:
         # Detect DirectAdmin.
         if os.path.isfile("/usr/local/directadmin/conf/directadmin.conf"):
-            print header("DirectAdmin")
+            print(ok(header("DirectAdmin")))
 
             # Ask the user for a DirectAdmin login information.
-            admin_user = raw_input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
+            admin_user = input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
             admin_pass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
@@ -75,60 +74,60 @@ def main(argv=None):
             directadmin.enable_spamassassin(user, password, domain)
 
         else:
-            print error("Only DirectAdmin servers are currently supported!")
+            print(error("Only DirectAdmin servers are currently supported!"))
             sys.exit(-1)
 
         if args.mysql:
-            print header("MySQL")
-            print ok(directadmin.test_mysql_connection())
+            print(header("MySQL"))
+            print(bcolors.OKGREEN(directadmin.test_mysql_connection()))
 
         if args.php:
-            print header("PHP")
-            print ok(php.check_config())
-            print ok(php.test_session_handler(user, domain))
-            print ok(php.test_mod_ruid2(user, domain))
-            print ok(php.test_mail(user, domain))
+            print(header("PHP"))
+            print(ok(php.check_config()))
+            print(ok(php.test_session_handler(user, domain)))
+            print(ok(php.test_mod_ruid2(user, domain)))
+            print(ok(php.test_mail(user, domain)))
 
         if args.pop3:
-            print header("POP3")
-            print ok(pop3.test_pop3(user, domain, password))
-            print ok(pop3.test_pop3(user, domain, password, ssl=True))
+            print(header("POP3"))
+            print(ok(pop3.test_pop3(user, domain, password)))
+            print(ok(pop3.test_pop3(user, domain, password, ssl=True)))
 
         if args.imap:
-            print header("IMAP")
-            print ok(imap.test_imap(user, domain, password))
-            print ok(imap.test_imap(user, domain, password, ssl=True))
+            print(header("IMAP"))
+            print(ok(imap.test_imap(user, domain, password)))
+            print(ok(imap.test_imap(user, domain, password, ssl=True)))
 
         if args.smtp:
-            print header("SMTP")
-            print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False))
-            print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=True))
-            print ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False,
-                                    start_tls=True))
+            print(header("SMTP"))
+            print(ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False)))
+            print(ok(smtp.test_smtp(user, domain, password, ssl=False, submission=True)))
+            print(ok(smtp.test_smtp(user, domain, password, ssl=False, submission=False,
+                                    start_tls=True)))
             if '465' in open('/etc/exim.conf').read():
-                print ok(smtp.test_smtp(user, domain, password, ssl=True, submission=False))
+                print(ok(smtp.test_smtp(user, domain, password, ssl=True, submission=False)))
 
         if args.ftp:
-            print header("FTP")
-            print ok(ftp.test_ftp(user, domain, password))
+            print(header("FTP"))
+            print(ok(ftp.test_ftp(user, domain, password)))
             if sys.version_info[0] > 2 or (sys.version_info[0] == 2 and sys.version_info[1] > 6):
-                print ok(ftp.test_ftp(user, domain, password, ssl=True))
+                print(ok(ftp.test_ftp(user, domain, password, ssl=True)))
 
         if args.spamassassin:
-            print header("SpamAssassin")
-            print ok(spamassassin.test_spamassassin(user, domain, password))
+            print(header("SpamAssassin"))
+            print(ok(spamassassin.test_spamassassin(user, domain, password)))
 
         if args.phpmyadmin:
-            print header("phpMyAdmin")
-            print ok(phpmyadmin.test_phpmyadmin())
+            print(header("phpMyAdmin"))
+            print(ok(phpmyadmin.test_phpmyadmin()))
 
         if args.roundcube:
-            print header("Roundcube")
-            print ok(roundcube.test_roundcube())
+            print(header("Roundcube"))
+            print(ok(roundcube.test_roundcube()))
 
         # Finally, remove the account alltogether.
         directadmin.remove_account(admin_user, admin_pass, user)
     except Exception as err:
-        print error(err)
+        print(error(err))
 
     return True

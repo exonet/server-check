@@ -1,6 +1,6 @@
 import poplib
 import time
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def test_pop3(user, domain, password, ssl=False):

@@ -1,5 +1,5 @@
 import imaplib
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def test_imap(user, domain, password, ssl=False):

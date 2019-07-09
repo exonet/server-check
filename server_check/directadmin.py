@@ -3,10 +3,10 @@ import requests
 import random
 import string
 import socket
-import MySQLdb
+import mysql.connector
 import re
 import subprocess
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def get_api_url():
@@ -39,8 +39,8 @@ def test_mysql_connection():
 
     # Try to create a connection.
     con = None
-    con = MySQLdb.connect('localhost', user, passwd, 'mysql')
-    cur = con.cursor(MySQLdb.cursors.DictCursor)
+    con = mysql.connector.connect('localhost', user, passwd, 'mysql')
+    cur = con.cursor(mysql.connector.cursors.DictCursor)
     cur.execute("SELECT COUNT(User) AS usercount FROM user")
     if cur.rowcount:
         row = cur.fetchone()
