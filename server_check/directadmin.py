@@ -49,7 +49,7 @@ def test_mysql_connection():
 
 
 def create_random_domain(admin_user, admin_pass):
-    user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(17))
+    user = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
     domain = user + ".nl"
 
     password = ""
