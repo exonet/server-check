@@ -110,10 +110,9 @@ def create_random_domain(admin_user, admin_pass):
         fh.write("%s\t\twww.%s\n" % (ip, domain))
 
     # Give httpd a reload to ensure the hostname is picked up.
-    DEVNULL = open(os.devnull, 'wb')
-    ret = subprocess.Popen(["/etc/init.d/httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
-    ret.wait()
-    DEVNULL.close()
+    with open(os.devnull, 'wb') as DEVNULL:
+        ret = subprocess.Popen(["/etc/init.d/httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
+        ret.wait()
 
     return domain, user, password
 
