@@ -78,7 +78,7 @@ def main(argv=None):
 
         if args.mysql:
             print(header("MySQL"))
-            print(bcolors.OKGREEN(directadmin.test_mysql_connection()))
+            print(ok(directadmin.test_mysql_connection()))
 
         if args.php:
             print(header("PHP"))
