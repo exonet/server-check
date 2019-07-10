@@ -107,7 +107,7 @@ def create_random_domain(admin_user, admin_pass):
 
     # Give httpd a reload to ensure the hostname is picked up.
     with open(os.devnull, 'wb') as DEVNULL:
-        ret = subprocess.Popen(["/usr/sbin/service", "httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
+        ret = subprocess.Popen(["/usr/local/directadmin/dataskq"], stdout=DEVNULL, stderr=DEVNULL)
         ret.wait()
 
     return domain, user, password
