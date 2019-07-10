@@ -126,6 +126,7 @@ def main(argv=None):
 
     except Exception as err:
         print(error(err))
+        raise err
     finally:
         # Finally, remove the account alltogether.
         directadmin.remove_account(admin_user, admin_pass, user)
