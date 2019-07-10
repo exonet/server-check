@@ -57,6 +57,7 @@ def test_session_handler(user, domain, checkstring=None):
 
 
 def test_mod_ruid2(user, domain):
+    # TODO: Rename to something more generic as this test works for PHP-FPM as well.
     try:
         userent = pwd.getpwnam(user)
     except:
@@ -96,6 +97,7 @@ def test_mod_ruid2(user, domain):
 
 
 def test_mail(user, domain):
+    # TODO: try to trigger the HELO issue.
     try:
         userent = pwd.getpwnam(user)
     except:
