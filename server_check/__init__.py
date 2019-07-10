@@ -124,9 +124,11 @@ def main(argv=None):
             print(header("Roundcube"))
             print(ok(roundcube.test_roundcube()))
 
-        # Finally, remove the account alltogether.
-        directadmin.remove_account(admin_user, admin_pass, user)
     except Exception as err:
         print(error(err))
+    finally:
+        # Finally, remove the account alltogether.
+        directadmin.remove_account(admin_user, admin_pass, user)
+
 
     return True
