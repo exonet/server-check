@@ -69,11 +69,6 @@ def main(argv=None):
             # Create a new user in DirectAdmin.
             domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
 
-            # Instead of waiting for DirectAdmin's datasqk to do this, we do it manually.
-            if os.path.isfile("/usr/bin/pure-pw"):
-                ret = subprocess.Popen(["/usr/bin/pure-pw", "mkdb", "/etc/pureftpd.pdb", "-f", "/etc/proftpd.passwd"])
-                ret.wait()
-
             # Enable SpamAssassin.
             directadmin.enable_spamassassin(user, password, domain)
 
