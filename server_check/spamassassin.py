@@ -19,10 +19,10 @@ def test_spamassassin(user, domain, password):
             msgid, octets = msg.split()
 
             # Get the message.
-            response, message, octets = conn.retr(msgid)
+            response, message, octets = conn.retr(msgid.decode())
             for line in message:
-                if 'X-Spam-Status' in line:
-                    return "Test message contains SpamAssassin headers (message %s)." % msgid
+                if 'X-Spam-Status' in line.decode():
+                    return "Test message contains SpamAssassin headers (message %s)." % msgid.decode()
 
         attempt += 1
         conn.quit()
