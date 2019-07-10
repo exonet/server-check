@@ -10,7 +10,7 @@ from .exceptions import TestException
 
 def check_config():
     proc = subprocess.Popen(["php", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = proc.communicate()[0]
+    output = proc.communicate()[0].decode()
 
     if 'error' in output.lower() or 'warning' in output.lower():
         raise TestException("Error or warning in output:\n%s" % output)
