@@ -59,8 +59,12 @@ def main(argv=None):
             print(ok(header("DirectAdmin")))
 
             # Ask the user for a DirectAdmin login information.
-            admin_user = input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
-            admin_pass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
+            admin_user = os.environ.get('DIRECTADMIN_USER', None)
+            if admin_user is None:
+                admin_user = input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
+            admin_pass = os.environ.get('DIRECTADMIN_PASSWORD', None)
+            if admin_pass is None:
+                admin_pass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
             domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
