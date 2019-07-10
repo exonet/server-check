@@ -22,9 +22,9 @@ def test_pop3(user, domain, password, ssl=False):
         msgid, octets = lastmsg.split()
 
         # Get the message.
-        response, message, octets = conn.retr(msgid)
+        response, message, octets = conn.retr(msgid.decode())
         for line in message:
-            if 'da_server_check mail test' in line:
+            if 'da_server_check mail test' in line.decode():
                 return "Test message retrieved via Dovecot POP3%s." % ("_SSL" if ssl else "")
 
         attempt += 1
