@@ -3,7 +3,7 @@ from .exceptions import TestException
 import time
 
 
-def test_spamassassin(user, domain, password):
+def test_spamassassin(user, domain, password, delay=1):
     # Fetch all messages and see if it contains SpamAssassin headers
     attempt = 1
     while attempt <= 10:
@@ -26,6 +26,7 @@ def test_spamassassin(user, domain, password):
 
         attempt += 1
         conn.quit()
-        time.sleep(1)
+        if delay:
+            time.sleep(delay)
 
-    raise TestException("Retrieved message does not contain SpamAssassin headers:\n%s" % '\n'.join(message))
+    raise TestException("Retrieved message does not contain SpamAssassin headers:\n{}".format(b'\n'.join(message)))
