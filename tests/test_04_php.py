@@ -28,7 +28,7 @@ def test_01_test_session_handler(mock_open, mock_chown, domain):
             get.return_value = get_return
 
             assert "Session handler OK." in php.test_session_handler(domain.user, domain.domain,
-                                                                     checkstring='test')
+                                                                     checkstring='test', delay=None)
             # Make it return something else for the session.
             get_return.text = 'foobar'
             get.return_value = get_return

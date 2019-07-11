@@ -18,9 +18,10 @@ def check_config():
     return "PHP config does not contain 'error' or 'warning'"
 
 
-def test_session_handler(user, domain, checkstring=None):
-    # Sleep a second to ensure the httpd has restarted.
-    time.sleep(3)
+def test_session_handler(user, domain, checkstring=None, delay=3):
+    if delay:
+        # Sleep a second to ensure the httpd has restarted.
+        time.sleep(delay)
 
     if checkstring is None:
         checkstring = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
