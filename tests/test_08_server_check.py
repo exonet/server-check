@@ -1,5 +1,3 @@
-import pytest
-import sys
 from mock import patch, mock_open
 
 

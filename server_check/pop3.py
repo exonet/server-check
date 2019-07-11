@@ -1,9 +1,11 @@
 import poplib
 import time
+
 from .exceptions import TestException
 
 
 def test_pop3(user, domain, password, ssl=False, delay=1):
+    message = b''
     attempt = 1
     while attempt <= 10:
         # Open a pop3 connection to localhost.
@@ -32,4 +34,5 @@ def test_pop3(user, domain, password, ssl=False, delay=1):
         if delay:
             time.sleep(delay)
 
-    raise TestException("Retrieved message does not contain test string:\n{}".format(b'\n'.join(message)))
+    raise TestException(
+        "Retrieved message does not contain test string:\n{}".format(b'\n'.join(message)))

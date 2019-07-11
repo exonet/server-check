@@ -1,11 +1,13 @@
 import poplib
-from .exceptions import TestException
 import time
+
+from .exceptions import TestException
 
 
 def test_spamassassin(user, domain, password, delay=1):
     # Fetch all messages and see if it contains SpamAssassin headers
     attempt = 1
+    message = []
     while attempt <= 10:
         # Open a pop3 connection to localhost.
         conn = poplib.POP3('localhost')

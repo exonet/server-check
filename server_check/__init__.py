@@ -1,17 +1,17 @@
-import sys
-import os
 import argparse
-import subprocess
 import getpass
+import os
+import sys
+
 from server_check import directadmin
-from server_check import php
-from server_check import pop3
-from server_check import imap
-from server_check import smtp
 from server_check import ftp
-from server_check import spamassassin
+from server_check import imap
+from server_check import php
 from server_check import phpmyadmin
+from server_check import pop3
 from server_check import roundcube
+from server_check import smtp
+from server_check import spamassassin
 from server_check.bcolors import bcolors, warning, ok, header, error
 
 
@@ -19,25 +19,31 @@ def parse_args(arguments=None):
     parser = argparse.ArgumentParser(
         description='Check a server to see if all components are still operating correctly.',
         epilog='If no options are specified, all checks will run.')
-    parser.add_argument("-m", "--mysql", help='Run MySQL checks', dest='mysql', action='store_true')
-    parser.add_argument("-P", "--php", help='Run PHP checks', dest='php', action='store_true')
-    parser.add_argument("-p", "--pop3", help='Run POP3 checks', dest='pop3', action='store_true')
-    parser.add_argument("-i", "--imap", help='Run IMAP checks', dest='imap', action='store_true')
-    parser.add_argument("-f", "--ftp", help='Run FTP checks', dest='ftp', action='store_true')
-    parser.add_argument("-S", "--smtp", help='Run SMTP checks', dest='smtp', action='store_true')
-    parser.add_argument("-r", "--roundcube", help='Run RoundCube checks', dest='roundcube', action='store_true')
-    parser.add_argument("-a", "--phpmyadmin", help='Run phpMyAdmin checks', dest='phpmyadmin', action='store_true')
-    parser.add_argument("-s", "--spamassassin", help='Run SpamAssassin checks', dest='spamassassin',
-                        action='store_true')
+    parser.add_argument(
+        "-m", "--mysql", help='Run MySQL checks', dest='mysql', action='store_true')
+    parser.add_argument(
+        "-P", "--php", help='Run PHP checks', dest='php', action='store_true')
+    parser.add_argument(
+        "-p", "--pop3", help='Run POP3 checks', dest='pop3', action='store_true')
+    parser.add_argument(
+        "-i", "--imap", help='Run IMAP checks', dest='imap', action='store_true')
+    parser.add_argument(
+        "-f", "--ftp", help='Run FTP checks', dest='ftp', action='store_true')
+    parser.add_argument(
+        "-S", "--smtp", help='Run SMTP checks', dest='smtp', action='store_true')
+    parser.add_argument(
+        "-r", "--roundcube", help='Run RoundCube checks', dest='roundcube', action='store_true')
+    parser.add_argument(
+        "-a", "--phpmyadmin", help='Run phpMyAdmin checks', dest='phpmyadmin', action='store_true')
+    parser.add_argument(
+        "-s", "--spamassassin", help='Run SpamAssassin checks', dest='spamassassin',
+        action='store_true')
 
     args = parser.parse_args(arguments)
 
     # If none of the options are specified, enable them all.
-    if (not args.mysql and not args.php and not args.pop3 and not args.imap and not args.ftp and
-            not args.spamassassin and not args.smtp and not args.phpmyadmin and not args.roundcube):
-
-        args.mysql = args.php = args.pop3 = args.imap = args.ftp = args.spamassassin = args.smtp = args.phpmyadmin\
-            = args.roundcube = True
+    if not args.mysql and not args.php and not args.pop3 and not args.imap and not args.ftp and not args.spamassassin and not args.smtp and not args.phpmyadmin and not args.roundcube:
+        args.mysql = args.php = args.pop3 = args.imap = args.ftp = args.spamassassin = args.smtp = args.phpmyadmin = args.roundcube = True
 
     return args
 
@@ -64,7 +70,8 @@ def main(argv=None):
                 admin_user = input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
             admin_pass = os.environ.get('DIRECTADMIN_PASSWORD', None)
             if admin_pass is None:
-                admin_pass = getpass.getpass(bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
+                admin_pass = getpass.getpass(
+                    bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
             domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
@@ -124,12 +131,10 @@ def main(argv=None):
             print(header("Roundcube"))
             print(ok(roundcube.test_roundcube()))
 
-    except Exception as err:
-        print(error(err))
-        # raise err
-    finally:
         # Finally, remove the account alltogether.
         directadmin.remove_account(admin_user, admin_pass, user)
 
+    except Exception as err:
+        print(error(err))
 
     return True

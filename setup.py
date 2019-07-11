@@ -11,7 +11,7 @@ setup(
     maintainer="Rick van den Hof",
     maintainer_email='support@exonet.nl',
     url='https://github.com/exonet/server-check',
-    description='Check a DirectAdmin server to see if all components are (still) operating correctly',
+    description='Check a DirectAdmin server to see if all components are operating correctly',
     long_description=readme,
     license='MIT',
     keywords='DirectAdmin check pop3 imap ftp smtp phpmyadmin mod_ruid2 spamassasassin roundcube',

@@ -51,7 +51,11 @@ def create_random_domain(admin_user, admin_pass):
 
     password = ""
     while not validPassword(password):
-        password = '!' + ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(17))
+        password = '!' + ''.join(
+            random.SystemRandom().choice(
+                string.ascii_lowercase + string.ascii_uppercase + string.digits
+            ) for _ in range(17)
+        )
 
     # Note, this might return 127.0.0.1.
     ip = socket.gethostbyname(socket.gethostname())
@@ -101,7 +105,8 @@ def create_random_domain(admin_user, admin_pass):
     elif "error=1" in r.text:
         raise TestException("Unable to create DirectAdmin user %s: %s" % (user, r.text))
 
-    # In order to make sure we're connecting to the right virtualhost, we must add the domain to /etc/hosts.
+    # In order to make sure we're connecting to the right virtualhost
+    #   we must add the domain to /etc/hosts.
     with open("/etc/hosts", "a") as fh:
         fh.write("%s\t\twww.%s\n" % (ip, domain))
 
