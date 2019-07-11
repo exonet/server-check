@@ -23,7 +23,7 @@ def test_01_test_ftp(mockftp, domain):
 
     with pytest.raises(exceptions.TestException) as err:
         ftp.test_ftp(domain.user, domain.domain, domain.password)
-    assert 'Permanent error while trying to log in.' in err.value.message
+        assert 'Permanent error while trying to log in.' in err.value.message
 
 
 def test_02_download_handler():
@@ -31,4 +31,4 @@ def test_02_download_handler():
 
     with pytest.raises(exceptions.TestException) as err:
         ftp.download_handler("this is not a test")
-    assert 'Line not expected' in err.value.message
+        assert 'Line not expected' in err.value.message
