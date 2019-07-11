@@ -1,17 +1,18 @@
-import pytest
-from server_check import exceptions
-from server_check import directadmin
-from mock import patch, mock_open
 import collections
 
+import pytest
+from mock import patch, mock_open
 
-@patch('MySQLdb.__init__')
-@patch('MySQLdb.connect')
-@patch('MySQLdb.cursors.DictCursor')
-def test_00_mysql_connection(mock_init, mock_connect, mock_dict):
+from server_check import directadmin
+from server_check import exceptions
+
+
+@patch('mysql.connector.connect')
+def test_00_mysql_connection(mock_connect):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
-    with patch('__builtin__.open', mocked_open):
-        assert 'OK' in directadmin.test_mysql_connection()
+    with patch('server_check.directadmin.open', mocked_open):
+        directadmin.test_mysql_connection()
+        assert mock_connect.called_with(host='localhost', user='foo', password='bar', database='mysql')
 
 
 @patch('__builtin__.open')
