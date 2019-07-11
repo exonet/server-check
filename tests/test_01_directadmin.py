@@ -46,7 +46,7 @@ def test_02_validPassword():
     assert directadmin.validPassword('abc') is False
 
 
-@patch('__builtin__.open')
+@patch('server_check.directadmin.open')
 def test_03_enable_spamassassin(mock_open, domain):
     with patch('requests.post') as post:
         assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
@@ -57,12 +57,12 @@ def test_03_enable_spamassassin(mock_open, domain):
         post.return_value = postreturn
         with pytest.raises(exceptions.TestException) as err:
             directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
-        assert 'DirectAdmin username or password incorrect' in err.value.message
+            assert 'DirectAdmin username or password incorrect' in err.value.message
 
 
 def test_04_remove_account(domain):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\nSSL=1\nport=1234\n')
-    with patch('__builtin__.open', mocked_open):
+    with patch('server_check.directadmin.open', mocked_open):
         with patch('requests.post') as post:
             assert directadmin.remove_account("", "", domain.user)
 
@@ -72,11 +72,11 @@ def test_04_remove_account(domain):
             post.return_value = postreturn
             with pytest.raises(exceptions.TestException) as err:
                 directadmin.remove_account("", "", domain.user)
-            assert 'DirectAdmin username or password incorrect' in err.value.message
+                assert 'DirectAdmin username or password incorrect' in err.value.message
 
             # Again but with an account we already deleted.
             postreturn.text = "error=1"
             post.return_value = postreturn
             with pytest.raises(exceptions.TestException) as err:
                 directadmin.remove_account("", "", domain.user)
-            assert 'Unable to delete DirectAdmin user %s' % domain.user in err.value.message
+                assert 'Unable to delete DirectAdmin user %s' % domain.user in err.value.message
