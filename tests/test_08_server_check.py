@@ -77,9 +77,9 @@ def test_01_main(mockpopen):
 @patch('server_check.roundcube')
 @patch('server_check.phpmyadmin')
 def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin,
-                 mockpopen):
+                 mock_popen, mock_directadmin_open):
     import server_check
-    with patch('__builtin__.raw_input') as mock_raw_input:
+    with patch('server_check.input') as mock_raw_input:
         with patch('getpass.getpass') as mock_getpass:
             with patch('os.geteuid') as mock_geteuid:
                 with patch('os.path.isfile') as mock_isfile:
@@ -91,6 +91,6 @@ def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php
                     mock_geteuid.return_value = 0
                     directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
 
-                    mocked_open = mock_open(read_data='465\n')
-                    with patch('__builtin__.open', mocked_open):
+                    mocked_exim_open = mock_open(read_data='465\n')
+                    with patch('server_check.open', mocked_exim_open):
                         assert server_check.main([])
