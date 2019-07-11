@@ -56,7 +56,7 @@ def main(argv=None):
     try:
         # Detect DirectAdmin.
         if os.path.isfile("/usr/local/directadmin/conf/directadmin.conf"):
-            print(ok(header("DirectAdmin")))
+            print(header("DirectAdmin"))
 
             # Ask the user for a DirectAdmin login information.
             admin_user = os.environ.get('DIRECTADMIN_USER', None)
