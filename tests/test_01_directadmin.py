@@ -15,9 +15,9 @@ def test_00_mysql_connection(mock_connect):
         assert mock_connect.called_with(host='localhost', user='foo', password='bar', database='mysql')
 
 
-@patch('__builtin__.open')
+@patch('server_check.directadmin.open')
 @patch('subprocess.Popen')
-def test_01_create_random_domain(mock_open, mock_popen, domain):
+def test_01_create_random_domain(mock_popen, mock_open, domain):
     with patch('requests.post') as post:
         domain, user, password = directadmin.create_random_domain("", "")
         assert domain
@@ -37,8 +37,8 @@ def test_01_create_random_domain(mock_open, mock_popen, domain):
         post.return_value = postreturn
 
         with pytest.raises(exceptions.TestException) as err:
-                domain, user, password = directadmin.create_random_domain("", "")
-        assert 'Unable to create DirectAdmin user' in err.value.message
+            domain, user, password = directadmin.create_random_domain("", "")
+            assert 'Unable to create DirectAdmin user' in err.value.message
 
 
 def test_02_validPassword():
