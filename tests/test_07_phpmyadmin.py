@@ -8,7 +8,7 @@ from mock import patch, mock_open
 def test_00_test_phpmyadmin():
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
     with patch('requests.get') as get:
-        with patch('__builtin__.open', mocked_open):
+        with patch('server_check.phpmyadmin.open', mocked_open):
             getreturn = collections.namedtuple('getreturn', 'text, status_code')
             getreturn.text = 'phpMyAdmin'
             getreturn.status_code = 200
@@ -22,4 +22,4 @@ def test_00_test_phpmyadmin():
             get.return_value = getreturn
             with pytest.raises(exceptions.TestException) as err:
                 phpmyadmin.test_phpmyadmin()
-            assert 'Unable to log in' in err.value.message
+                assert 'Unable to log in' in err.value.message
