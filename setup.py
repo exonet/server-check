@@ -9,7 +9,7 @@ setup(
     name='server_check',
     use_scm_version=True,
     maintainer="Rick van den Hof",
-    maintainer_email='r.vandenhof@exonet.nl',
+    maintainer_email='support@exonet.nl',
     url='https://github.com/exonet/server-check',
     description='Check a DirectAdmin server to see if all components are (still) operating correctly',
     long_description=readme,
@@ -22,6 +22,7 @@ setup(
         'Environment :: Console',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
         'Development Status :: 4 - Beta'
     ],
