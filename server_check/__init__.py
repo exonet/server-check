@@ -42,8 +42,11 @@ def parse_args(arguments=None):
     args = parser.parse_args(arguments)
 
     # If none of the options are specified, enable them all.
-    if not args.mysql and not args.php and not args.pop3 and not args.imap and not args.ftp and not args.spamassassin and not args.smtp and not args.phpmyadmin and not args.roundcube:
-        args.mysql = args.php = args.pop3 = args.imap = args.ftp = args.spamassassin = args.smtp = args.phpmyadmin = args.roundcube = True
+    if not args.mysql and not args.php and not args.pop3 and not args.imap \
+            and not args.ftp and not args.spamassassin and not args.smtp \
+            and not args.phpmyadmin and not args.roundcube:
+        args.mysql = args.php = args.pop3 = args.imap = args.ftp = args.spamassassin \
+            = args.smtp = args.phpmyadmin = args.roundcube = True
 
     return args
 

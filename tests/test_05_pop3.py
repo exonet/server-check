@@ -1,7 +1,8 @@
-from server_check import pop3
-from server_check import exceptions
-from mock import patch
 import pytest
+from mock import patch
+
+from server_check import exceptions
+from server_check import pop3
 
 
 def test_00_test_pop3(domain):
@@ -14,7 +15,8 @@ def test_00_test_pop3(domain):
 
     with patch('poplib.POP3_SSL') as mockpopssl:
         mockpopssl.return_value.list.return_value = [b'+OK 1 messages:', [b'1 557'], 7]
-        mockpopssl.return_value.retr.return_value = [b'+OK:', [b'', b'da_server_check mail test'], 0]
+        mockpopssl.return_value.retr.return_value = [b'+OK:', [b'', b'da_server_check mail test'],
+                                                     0]
 
         assert "Test message retrieved via Dovecot POP3_SSL." in \
             pop3.test_pop3(domain.user, domain.domain, domain.password, True)

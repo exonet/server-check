@@ -1,8 +1,10 @@
-import pytest
-from server_check import php
-from server_check import exceptions
-from mock import patch
 import collections
+
+import pytest
+from mock import patch
+
+from server_check import exceptions
+from server_check import php
 
 
 def test_00_check_config(domain):
@@ -19,7 +21,7 @@ def test_00_check_config(domain):
 
 @patch('server_check.php.open')
 @patch('os.chown')
-def test_01_test_session_handler(mock_chown,mock_open, domain):
+def test_01_test_session_handler(mock_chown, mock_open, domain):
     with patch('requests.Session.get') as get:
         with patch('pwd.getpwnam') as pwnam:
             pwnam.return_value = ['', '', 0, 0]
@@ -28,7 +30,8 @@ def test_01_test_session_handler(mock_chown,mock_open, domain):
             get.return_value = get_return
 
             assert "Session handler OK." in php.test_session_handler(domain.user, domain.domain,
-                                                                     checkstring='test', delay=None)
+                                                                     checkstring='test',
+                                                                     delay=None)
             # Make it return something else for the session.
             get_return.text = 'foobar'
             get.return_value = get_return
@@ -61,7 +64,8 @@ def test_02_test_mod_ruid2(mock_chown, mock_open, domain):
                 stat_return.st_gid = 0
                 stat.return_value = stat_return
 
-                assert "mod_ruid2 enabled and working." in php.test_mod_ruid2(domain.user, domain.domain)
+                assert "mod_ruid2 enabled and working." in php.test_mod_ruid2(domain.user,
+                                                                              domain.domain)
 
                 # Again with modified return handler for session.
                 get_return.status_code = 500
@@ -116,4 +120,5 @@ def test_03_test_mail(mock_open, mock_chown, domain):
         # Again with non-existing user.
         with pytest.raises(exceptions.TestException) as err:
             php.test_mail(domain.user, domain.domain)
-            assert "User %s does not seem to exist on this system." % domain.user in err.value.message
+            assert "User %s does not seem to exist on this system." \
+                   % domain.user in err.value.message

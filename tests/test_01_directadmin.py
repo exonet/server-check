@@ -12,7 +12,8 @@ def test_00_mysql_connection(mock_connect):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
     with patch('server_check.directadmin.open', mocked_open):
         directadmin.test_mysql_connection()
-        assert mock_connect.called_with(host='localhost', user='foo', password='bar', database='mysql')
+        assert mock_connect.called_with(host='localhost', user='foo', password='bar',
+                                        database='mysql')
 
 
 @patch('server_check.directadmin.open')

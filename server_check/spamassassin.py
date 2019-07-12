@@ -24,11 +24,13 @@ def test_spamassassin(user, domain, password, delay=1):
             response, message, octets = conn.retr(msgid.decode())
             for line in message:
                 if 'X-Spam-Status' in line.decode():
-                    return "Test message contains SpamAssassin headers (message %s)." % msgid.decode()
+                    return "Test message contains SpamAssassin headers (message %s)." \
+                           % msgid.decode()
 
         attempt += 1
         conn.quit()
         if delay:
             time.sleep(delay)
 
-    raise TestException("Retrieved message does not contain SpamAssassin headers:\n{}".format(b'\n'.join(message)))
+    raise TestException(
+        "Retrieved message does not contain SpamAssassin headers:\n{}".format(b'\n'.join(message)))

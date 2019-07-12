@@ -1,7 +1,8 @@
-from server_check import imap
-from server_check import exceptions
-from mock import patch
 import pytest
+from mock import patch
+
+from server_check import exceptions
+from server_check import imap
 
 
 def test_00_test_imap(domain):
@@ -14,7 +15,8 @@ def test_00_test_imap(domain):
 
     with patch('imaplib.IMAP4_SSL') as mock_imap_ssl:
         mock_imap_ssl.return_value.search.return_value = [b'+OK', [b'1 2 3']]
-        mock_imap_ssl.return_value.fetch.return_value = [b'+OK:', [[b'', b'da_server_check mail test']]]
+        mock_imap_ssl.return_value.fetch.return_value = [b'+OK:',
+                                                         [[b'', b'da_server_check mail test']]]
 
         assert "Test message retrieved via Dovecot IMAP_SSL." in \
             imap.test_imap(domain.user, domain.domain, domain.password, True)
