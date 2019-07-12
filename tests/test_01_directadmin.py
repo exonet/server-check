@@ -42,7 +42,7 @@ def test_01_create_random_domain(mock_popen, mock_open, domain):
             assert 'Unable to create DirectAdmin user' in err.value.message
 
 
-def test_02_validPassword():
+def test_02_valid_password():
     assert directadmin.valid_password('Aa12bcC')
     assert directadmin.valid_password('abc') is False
 
