@@ -50,7 +50,7 @@ def create_random_domain(admin_user, admin_pass):
     domain = user + ".nl"
 
     password = ""
-    while not validPassword(password):
+    while not valid_password(password):
         password = '!' + ''.join(
             random.SystemRandom().choice(
                 string.ascii_lowercase + string.ascii_uppercase + string.digits
@@ -118,7 +118,7 @@ def create_random_domain(admin_user, admin_pass):
     return domain, user, password
 
 
-def validPassword(password):
+def valid_password(password):
     uc = r'[A-Z]'
     lc = r'[a-z]'
     num = r'[0-9]'

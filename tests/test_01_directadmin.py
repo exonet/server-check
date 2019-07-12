@@ -43,8 +43,8 @@ def test_01_create_random_domain(mock_popen, mock_open, domain):
 
 
 def test_02_validPassword():
-    assert directadmin.validPassword('Aa12bcC')
-    assert directadmin.validPassword('abc') is False
+    assert directadmin.valid_password('Aa12bcC')
+    assert directadmin.valid_password('abc') is False
 
 
 @patch('server_check.directadmin.open')
