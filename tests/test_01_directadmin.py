@@ -18,7 +18,7 @@ def test_00_mysql_connection(mock_connect):
 
 @patch('server_check.directadmin.open')
 @patch('subprocess.Popen')
-def test_01_create_random_domain(mock_popen, mock_open, domain):
+def test_01_create_random_domain(mock_popen, mock_directadmin_open, domain):
     with patch('requests.post') as post:
         domain, user, password = directadmin.create_random_domain("", "")
         assert domain
@@ -48,7 +48,7 @@ def test_02_valid_password():
 
 
 @patch('server_check.directadmin.open')
-def test_03_enable_spamassassin(mock_open, domain):
+def test_03_enable_spamassassin(mock_directadmin_open, domain):
     with patch('requests.post') as post:
         assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
 
