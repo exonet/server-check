@@ -12,7 +12,7 @@ from server_check import pop3
 from server_check import roundcube
 from server_check import smtp
 from server_check import spamassassin
-from server_check.bcolors import bcolors, warning, ok, header, error
+from server_check.bcolors import Bcolors, warning, ok, header, error
 
 
 def parse_args(arguments=None):
@@ -70,11 +70,11 @@ def main(argv=None):
             # Ask the user for a DirectAdmin login information.
             admin_user = os.environ.get('DIRECTADMIN_USER', None)
             if admin_user is None:
-                admin_user = input(bcolors.BOLD + "DirectAdmin admin username: " + bcolors.ENDC)
+                admin_user = input(Bcolors.BOLD + "DirectAdmin admin username: " + Bcolors.ENDC)
             admin_pass = os.environ.get('DIRECTADMIN_PASSWORD', None)
             if admin_pass is None:
                 admin_pass = getpass.getpass(
-                    bcolors.BOLD + "DirectAdmin admin password: " + bcolors.ENDC)
+                    Bcolors.BOLD + "DirectAdmin admin password: " + Bcolors.ENDC)
 
             # Create a new user in DirectAdmin.
             domain, user, password = directadmin.create_random_domain(admin_user, admin_pass)
