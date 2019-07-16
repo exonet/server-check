@@ -1,22 +1,24 @@
-import pytest
-from server_check import exceptions
-from server_check import directadmin
-from mock import patch, mock_open
 import collections
 
+import pytest
+from mock import patch, mock_open
 
-@patch('MySQLdb.__init__')
-@patch('MySQLdb.connect')
-@patch('MySQLdb.cursors.DictCursor')
-def test_00_mysql_connection(mock_init, mock_connect, mock_dict):
+from server_check import directadmin
+from server_check import exceptions
+
+
+@patch('mysql.connector.connect')
+def test_00_mysql_connection(mock_connect):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\n')
-    with patch('__builtin__.open', mocked_open):
-        assert 'OK' in directadmin.test_mysql_connection()
+    with patch('server_check.directadmin.open', mocked_open):
+        directadmin.test_mysql_connection()
+        assert mock_connect.called_with(host='localhost', user='foo', password='bar',
+                                        database='mysql')
 
 
-@patch('__builtin__.open')
+@patch('server_check.directadmin.open')
 @patch('subprocess.Popen')
-def test_01_create_random_domain(mock_open, mock_popen, domain):
+def test_01_create_random_domain(mock_popen, mock_directadmin_open, domain):
     with patch('requests.post') as post:
         domain, user, password = directadmin.create_random_domain("", "")
         assert domain
@@ -36,17 +38,17 @@ def test_01_create_random_domain(mock_open, mock_popen, domain):
         post.return_value = postreturn
 
         with pytest.raises(exceptions.TestException) as err:
-                domain, user, password = directadmin.create_random_domain("", "")
-        assert 'Unable to create DirectAdmin user' in err.value.message
+            domain, user, password = directadmin.create_random_domain("", "")
+            assert 'Unable to create DirectAdmin user' in err.value.message
 
 
-def test_02_validPassword():
-    assert directadmin.validPassword('Aa12bcC')
-    assert directadmin.validPassword('abc') is False
+def test_02_valid_password():
+    assert directadmin.valid_password('Aa12bcC')
+    assert directadmin.valid_password('abc') is False
 
 
-@patch('__builtin__.open')
-def test_03_enable_spamassassin(mock_open, domain):
+@patch('server_check.directadmin.open')
+def test_03_enable_spamassassin(mock_directadmin_open, domain):
     with patch('requests.post') as post:
         assert directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
 
@@ -56,12 +58,12 @@ def test_03_enable_spamassassin(mock_open, domain):
         post.return_value = postreturn
         with pytest.raises(exceptions.TestException) as err:
             directadmin.enable_spamassassin(domain.user, domain.password, domain.domain)
-        assert 'DirectAdmin username or password incorrect' in err.value.message
+            assert 'DirectAdmin username or password incorrect' in err.value.message
 
 
 def test_04_remove_account(domain):
     mocked_open = mock_open(read_data='user=foo\npasswd=bar\nSSL=1\nport=1234\n')
-    with patch('__builtin__.open', mocked_open):
+    with patch('server_check.directadmin.open', mocked_open):
         with patch('requests.post') as post:
             assert directadmin.remove_account("", "", domain.user)
 
@@ -71,11 +73,11 @@ def test_04_remove_account(domain):
             post.return_value = postreturn
             with pytest.raises(exceptions.TestException) as err:
                 directadmin.remove_account("", "", domain.user)
-            assert 'DirectAdmin username or password incorrect' in err.value.message
+                assert 'DirectAdmin username or password incorrect' in err.value.message
 
             # Again but with an account we already deleted.
             postreturn.text = "error=1"
             post.return_value = postreturn
             with pytest.raises(exceptions.TestException) as err:
                 directadmin.remove_account("", "", domain.user)
-            assert 'Unable to delete DirectAdmin user %s' % domain.user in err.value.message
+                assert 'Unable to delete DirectAdmin user %s' % domain.user in err.value.message

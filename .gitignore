@@ -8,3 +8,4 @@ build
 ftp_test.txt
 dist/
 *swp
+.idea/

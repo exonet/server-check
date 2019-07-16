@@ -1,6 +1,7 @@
 import ftplib
 import time
-from exceptions import TestException
+
+from .exceptions import TestException
 
 
 def test_ftp(user, domain, password, ssl=False):
@@ -31,7 +32,7 @@ def test_ftp(user, domain, password, ssl=False):
     with open("ftp_test.txt", "w") as fh:
         fh.write("this is a test")
 
-    with open("ftp_test.txt", "r") as fh:
+    with open("ftp_test.txt", "rb") as fh:
         conn.storlines("STOR ftp_test.txt", fh)
 
     # Download a file.
@@ -43,7 +44,8 @@ def test_ftp(user, domain, password, ssl=False):
     # Disconnect.
     conn.quit()
 
-    return "Able to log in, upload, download and remove testfile via FTP%s." % ("_SSL" if ssl else "")
+    return "Able to log in, upload, download and remove testfile via FTP%s." % (
+        "_SSL" if ssl else "")
 
 
 def download_handler(line):

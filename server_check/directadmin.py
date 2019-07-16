@@ -3,10 +3,10 @@ import requests
 import random
 import string
 import socket
-import MySQLdb
+import mysql.connector
 import re
 import subprocess
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def get_api_url():
@@ -38,14 +38,11 @@ def test_mysql_connection():
                 passwd = value
 
     # Try to create a connection.
-    con = None
-    con = MySQLdb.connect('localhost', user, passwd, 'mysql')
-    cur = con.cursor(MySQLdb.cursors.DictCursor)
+    con = mysql.connector.connect(host='localhost', user=user, password=passwd, database='mysql')
+    cur = con.cursor()
     cur.execute("SELECT COUNT(User) AS usercount FROM user")
-    if cur.rowcount:
-        row = cur.fetchone()
-        con.close()
-        return "MySQL connection OK: %s users." % (row['usercount'])
+    for record in cur:
+        return "MySQL connection OK: {} users.".format(record[0])
 
 
 def create_random_domain(admin_user, admin_pass):
@@ -53,9 +50,12 @@ def create_random_domain(admin_user, admin_pass):
     domain = user + ".nl"
 
     password = ""
-    while not validPassword(password):
-        password = ''.join(random.SystemRandom().choice(
-            string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(6))
+    while not valid_password(password):
+        password = '!' + ''.join(
+            random.SystemRandom().choice(
+                string.ascii_lowercase + string.ascii_uppercase + string.digits
+            ) for _ in range(17)
+        )
 
     # Note, this might return 127.0.0.1.
     ip = socket.gethostbyname(socket.gethostname())
@@ -105,20 +105,20 @@ def create_random_domain(admin_user, admin_pass):
     elif "error=1" in r.text:
         raise TestException("Unable to create DirectAdmin user %s: %s" % (user, r.text))
 
-    # In order to make sure we're connecting to the right virtualhost, we must add the domain to /etc/hosts.
+    # In order to make sure we're connecting to the right virtualhost
+    #   we must add the domain to /etc/hosts.
     with open("/etc/hosts", "a") as fh:
         fh.write("%s\t\twww.%s\n" % (ip, domain))
 
     # Give httpd a reload to ensure the hostname is picked up.
-    DEVNULL = open(os.devnull, 'wb')
-    ret = subprocess.Popen(["/etc/init.d/httpd", "reload"], stdout=DEVNULL, stderr=DEVNULL)
-    ret.wait()
-    DEVNULL.close()
+    with open(os.devnull, 'wb') as DEVNULL:
+        ret = subprocess.Popen(["/usr/local/directadmin/dataskq"], stdout=DEVNULL, stderr=DEVNULL)
+        ret.wait()
 
     return domain, user, password
 
 
-def validPassword(password):
+def valid_password(password):
     uc = r'[A-Z]'
     lc = r'[a-z]'
     num = r'[0-9]'

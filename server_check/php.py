@@ -1,16 +1,18 @@
-import subprocess
-import requests
+import os
+import pwd
 import random
 import string
-import pwd
-import os
+import subprocess
 import time
-from exceptions import TestException
+
+import requests
+
+from .exceptions import TestException
 
 
 def check_config():
     proc = subprocess.Popen(["php", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = proc.communicate()[0]
+    output = proc.communicate()[0].decode()
 
     if 'error' in output.lower() or 'warning' in output.lower():
         raise TestException("Error or warning in output:\n%s" % output)
@@ -18,16 +20,18 @@ def check_config():
     return "PHP config does not contain 'error' or 'warning'"
 
 
-def test_session_handler(user, domain, checkstring=None):
-    # Sleep a second to ensure the httpd has restarted.
-    time.sleep(3)
+def test_session_handler(user, domain, checkstring=None, delay=3):
+    if delay:
+        # Sleep a second to ensure the httpd has restarted.
+        time.sleep(delay)
 
     if checkstring is None:
-        checkstring = ''.join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
+        checkstring = ''.join(
+            random.SystemRandom().choice(string.ascii_lowercase) for _ in range(6))
 
     try:
         userent = pwd.getpwnam(user)
-    except:
+    except Exception as ex:
         raise TestException("User %s does not seem to exist on this system." % user)
 
     uid = userent[2]
@@ -57,9 +61,10 @@ def test_session_handler(user, domain, checkstring=None):
 
 
 def test_mod_ruid2(user, domain):
+    # TODO: Rename to something more generic as this test works for PHP-FPM as well.
     try:
         userent = pwd.getpwnam(user)
-    except:
+    except Exception as ex:
         raise TestException("User %s does not seem to exist on this system." % user)
 
     uid = userent[2]
@@ -67,14 +72,17 @@ def test_mod_ruid2(user, domain):
 
     # Write a PHP file that writes a txt file so we can check ownership.
     with open("/home/%s/domains/%s/public_html/mod_ruid2_test.php" % (user, domain), 'w') as fh:
-        fh.write("<?php\n file_put_contents('/home/%s/domains/%s/public_html/mod_ruid2.txt','foo');\n?>\n"
+        fh.write("""<?php
+file_put_contents('/home/%s/domains/%s/public_html/mod_ruid2.txt','foo');
+?>
+"""
                  % (user, domain))
     os.chown("/home/%s/domains/%s/public_html/mod_ruid2_test.php" % (user, domain), uid, gid)
 
     # Make sure, before we start, the file does not exist.
     try:
         os.remove("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain))
-    except:
+    except Exception as ex:
         # We ignore raise TestExceptions because the file probably didn't exist to begin with.
         pass
 
@@ -82,8 +90,9 @@ def test_mod_ruid2(user, domain):
     r = requests.get('http://www.%s/mod_ruid2_test.php' % domain)
 
     if r.status_code != 200:
-        raise TestException("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
-                            % (domain, r.status_code, r.text))
+        raise TestException(
+            "Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
+            % (domain, r.status_code, r.text))
     else:
         # See if the file was created and ownership is right.
         fuid = os.stat("/home/%s/domains/%s/public_html/mod_ruid2.txt" % (user, domain)).st_uid
@@ -91,14 +100,17 @@ def test_mod_ruid2(user, domain):
         if fuid == uid and fgid == gid:
             return "mod_ruid2 enabled and working."
         else:
-            raise TestException("file /home/%s/domains/%s/public_html/mod_ruid2.txt has incorrect ownership: uid is %s\
-                    (expected: %s), gid is %s (expected: %s)" % (user, domain, fuid, uid, fgid, gid))
+            raise TestException("file /home/%s/domains/%s/public_html/mod_ruid2.txt has "
+                                "incorrect ownership: uid is %s\
+                                        (expected: %s), gid is %s (expected: %s)" % (
+                                    user, domain, fuid, uid, fgid, gid))
 
 
 def test_mail(user, domain):
+    # TODO: try to trigger the HELO issue.
     try:
         userent = pwd.getpwnam(user)
-    except:
+    except Exception as ex:
         raise TestException("User %s does not seem to exist on this system." % user)
 
     uid = userent[2]
@@ -106,17 +118,23 @@ def test_mail(user, domain):
 
     # Write a PHP file that sends an e-mail to user@domain.
     with open("/home/%s/domains/%s/public_html/mail_test.php" % (user, domain), 'w') as fh:
-        fh.write("<?php\n if (mail('%s@%s','da_server_check mail test','da_server_check mail test'))\n\techo 'OK';\
-\nelse\n\techo 'FAILED';\n?>\n"
-                 % (user, domain))
+        fh.write("""
+<?php
+if (mail('%s@%s','da_server_check mail test','da_server_check mail test'))
+    echo 'OK';
+else
+    echo 'FAILED';
+?>
+""" % (user, domain))
     os.chown("/home/%s/domains/%s/public_html/mail_test.php" % (user, domain), uid, gid)
 
     # Access the php file so the mail is sent.
     r = requests.get('http://www.%s/mail_test.php' % domain)
 
     if r.status_code != 200:
-        raise TestException("Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
-                            % (domain, r.status_code, r.text))
+        raise TestException(
+            "Unexpected response from getting http://www.%s/mod_ruid2_test.php: %s %s"
+            % (domain, r.status_code, r.text))
     else:
         # See if OK was in the response.
         if 'OK' in r.text:

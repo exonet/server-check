@@ -20,12 +20,18 @@ def test_smtp(user, domain, password, ssl=False, submission=False, start_tls=Fal
     conn.login(user, password)
 
     # Send a message.
-    msg = "From: %s@%s\nTo: %s@%s\nSubject: exim test message\n\nfoo bar\n\
-    X5O!P%%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*" % (user, domain, user, domain)
+    msg = """From: %s@%s
+To: %s@%s
+Subject: exim test message
+
+foo bar
+\X5O!P%%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*""" % (
+        user, domain, user, domain)  # noqa
     conn.sendmail("%s@%s" % (user, domain), ["%s@%s" % (user, domain)], msg)
 
     # Disconnect.
     conn.quit()
-    return "Message successfully sent via SMTP%s%s on port %s." % ("_SSL" if ssl else "",
-                                                                   " with STARTTLS" if start_tls else "",
-                                                                   port)
+    return "Message successfully sent via SMTP%s%s on port %s." % (
+        "_SSL" if ssl else "",
+        " with STARTTLS" if start_tls else "",
+        port)

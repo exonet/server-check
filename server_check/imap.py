@@ -1,5 +1,5 @@
 import imaplib
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def test_imap(user, domain, password, ssl=False):
@@ -24,7 +24,7 @@ def test_imap(user, domain, password, ssl=False):
     lastmsg = msgids[len(msgids) - 1]
     typ, data = conn.fetch(lastmsg, '(RFC822)')
 
-    if 'da_server_check mail test' in data[0][1]:
+    if 'da_server_check mail test' in data[0][1].decode():
         return "Test message retrieved via Dovecot IMAP%s." % ("_SSL" if ssl else "")
     else:
         raise TestException("Retrieved message does not contain test string:\n%s" % (data[0][1]))

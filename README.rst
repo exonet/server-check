@@ -1,3 +1,12 @@
+.. image:: https://img.shields.io/pypi/v/server-check.svg?style=flat-square
+     :alt: PyPi version
+
+.. image:: https://img.shields.io/pypi/pyversions/server-check.svg?style=flat-square
+     :alt: Supported Python versions
+
+.. image:: https://img.shields.io/pypi/l/server-check.svg?style=flat-square
+     :alt: License
+
 .. image:: https://travis-ci.org/exonet/server-check.svg
   :target: https://travis-ci.org/exonet/server-check
      :alt: Build Status
@@ -46,3 +55,23 @@ To install on Debian 6/7 based DirectAdmin servers::
 Screenshot
 ----------
 .. image:: https://www.exonet.nl/img/pictures/articles/52/server_check.gif
+
+
+Conventions
+-----------
+
+Code style guide: PEP 8::
+
+ pycodestyle
+
+Testing
+-------
+
+Run unit tests and coverage::
+
+ py.test --cov=server_check --cov-report term-missing --cov-fail-under=95 tests/
+
+Security
+--------
+
+If you discover any security related issues please email `support@exonet.nl <mailto:support@exonet.nl>`_ instead of using the issue tracker.

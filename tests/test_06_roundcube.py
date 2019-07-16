@@ -20,4 +20,4 @@ def test_00_test_roundcube():
         get.return_value = getreturn
         with pytest.raises(exceptions.TestException) as err:
             roundcube.test_roundcube()
-        assert 'not found at' in err.value.message
+            assert 'not found at' in err.value.message

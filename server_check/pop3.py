@@ -1,9 +1,11 @@
 import poplib
 import time
-from exceptions import TestException
+
+from .exceptions import TestException
 
 
-def test_pop3(user, domain, password, ssl=False):
+def test_pop3(user, domain, password, ssl=False, delay=1):
+    message = b''
     attempt = 1
     while attempt <= 10:
         # Open a pop3 connection to localhost.
@@ -22,13 +24,15 @@ def test_pop3(user, domain, password, ssl=False):
         msgid, octets = lastmsg.split()
 
         # Get the message.
-        response, message, octets = conn.retr(msgid)
+        response, message, octets = conn.retr(msgid.decode())
         for line in message:
-            if 'da_server_check mail test' in line:
+            if 'da_server_check mail test' in line.decode():
                 return "Test message retrieved via Dovecot POP3%s." % ("_SSL" if ssl else "")
 
         attempt += 1
         conn.quit()
-        time.sleep(1)
+        if delay:
+            time.sleep(delay)
 
-    raise TestException("Retrieved message does not contain test string:\n%s" % '\n'.join(message))
+    raise TestException(
+        "Retrieved message does not contain test string:\n{}".format(b'\n'.join(message)))

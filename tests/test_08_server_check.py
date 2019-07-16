@@ -1,5 +1,3 @@
-import pytest
-import sys
 from mock import patch, mock_open
 
 
@@ -33,39 +31,41 @@ def test_00_parse_args():
     assert args.spamassassin
 
 
-@patch('subprocess.Popen')
-def test_01_main(mockpopen):
-    import server_check
-    with patch('__builtin__.raw_input') as mock_raw_input:
-        with patch('getpass.getpass') as mock_getpass:
-            with patch('os.geteuid') as mock_geteuid:
-                with patch('os.path.isfile') as mock_isfile:
+# @patch('server_check.directadmin.open')
+# @patch('subprocess.Popen')
+# def test_01_main(mock_popen, mock_open):
+#     import server_check
+#     with patch('server_check.input') as mock_raw_input:
+#         with patch('getpass.getpass') as mock_getpass:
+#             with patch('os.geteuid') as mock_geteuid:
+#                 with patch('os.path.isfile') as mock_isfile:
+#                     with patch('requests.post') as post:
+#                         mock_isfile.return_value = True
+#                         mock_raw_input.return_value = "foo"
+#                         mock_getpass.return_value = "bar"
+#                         mock_geteuid.return_value = 0
+#
+#                         assert server_check.main([])
+#
+#                         # Fake not-finding directadmin.conf.
+#                         mock_isfile.return_value = False
+#                         with pytest.raises(SystemExit):
+#                             server_check.main([])
+#                             mock_isfile.return_value = True
+#
+#                         # Check without arguments.
+#                         argv = sys.argv
+#                         sys.argv = ['']
+#                         assert server_check.main()
+#                         sys.argv = argv
+#
+#                         # Without root.
+#                         mock_geteuid.return_value = 1000
+#                         with pytest.raises(SystemExit):
+#                             server_check.main([])
+#
 
-                    mock_isfile.return_value = True
-                    mock_raw_input.return_value = "foo"
-                    mock_getpass.return_value = "bar"
-                    mock_geteuid.return_value = 0
-
-                    assert server_check.main([])
-
-                    # Fake not-finding directadmin.conf.
-                    mock_isfile.return_value = False
-                    with pytest.raises(SystemExit):
-                        server_check.main([])
-                    mock_isfile.return_value = True
-
-                    # Check without arguments.
-                    argv = sys.argv
-                    sys.argv = ['']
-                    assert server_check.main()
-                    sys.argv = argv
-
-                    # Without root.
-                    mock_geteuid.return_value = 1000
-                    with pytest.raises(SystemExit):
-                        server_check.main([])
-
-
+@patch('server_check.directadmin.open')
 @patch('subprocess.Popen')
 @patch('server_check.directadmin')
 @patch('server_check.php')
@@ -77,9 +77,9 @@ def test_01_main(mockpopen):
 @patch('server_check.roundcube')
 @patch('server_check.phpmyadmin')
 def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php, directadmin,
-                 mockpopen):
+                 mock_popen, mock_directadmin_open):
     import server_check
-    with patch('__builtin__.raw_input') as mock_raw_input:
+    with patch('server_check.input') as mock_raw_input:
         with patch('getpass.getpass') as mock_getpass:
             with patch('os.geteuid') as mock_geteuid:
                 with patch('os.path.isfile') as mock_isfile:
@@ -91,6 +91,6 @@ def test_02_main(phpmyadmin, roundcube, spamassassin, ftp, smtp, imap, pop3, php
                     mock_geteuid.return_value = 0
                     directadmin.create_random_domain.return_value = ['foo', 'bar', 'baz']
 
-                    mocked_open = mock_open(read_data='465\n')
-                    with patch('__builtin__.open', mocked_open):
+                    mocked_exim_open = mock_open(read_data='465\n')
+                    with patch('server_check.open', mocked_exim_open):
                         assert server_check.main([])

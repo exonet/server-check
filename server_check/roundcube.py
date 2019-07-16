@@ -1,5 +1,5 @@
 import requests
-from exceptions import TestException
+from .exceptions import TestException
 
 
 def test_roundcube(url='http://localhost/roundcube/'):
